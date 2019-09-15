@@ -9,6 +9,7 @@ import { AdminPage } from '@/AdminPage';
 import { LoginPage } from '@/LoginPage';
 import { Canvas } from '@/Canvas';
 import { Assignment } from '@/Assignment';
+import { Moderation } from '@/Moderation';
 
 class App extends React.Component {
     constructor(props) {
@@ -34,6 +35,7 @@ class App extends React.Component {
 
     render() {
         const { currentUser, isAdmin } = this.state;
+        console.log("Current User: ", currentUser)
         return (
             <Router history={history}>
                 <div>
@@ -44,6 +46,7 @@ class App extends React.Component {
                                 {isAdmin && <Link to="/admin" className="nav-item nav-link">Admin</Link>}
                                 <Link to="/canvas" className="nav-item nav-link">Canvas</Link>
                                 <Link to="/assignment" className="nav-item nav-link">Assignment</Link>
+                                <Link to="/moderation" className="nav-item nav-link">Moderation</Link>
                                 <a onClick={this.logout} className="nav-item nav-link">Logout</a>
                             </div>
                         </nav>
@@ -56,6 +59,7 @@ class App extends React.Component {
                                     <PrivateRoute path="/admin" roles={[Role.Admin]} component={AdminPage} />
                                     <PrivateRoute exact path="/canvas" component={Canvas} />
                                     <PrivateRoute exact path="/assignment" component={Assignment} />
+                                    <PrivateRoute exact path="/moderation" component={Moderation} />
                                     <Route path="/login" component={LoginPage} />
                                 </div>
                             </div>

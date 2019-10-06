@@ -10,6 +10,7 @@ import { LoginPage } from '@/LoginPage';
 import { Canvas } from '@/Canvas';
 import { Assignment } from '@/Assignment';
 import { Moderation } from '@/Moderation';
+import { Test } from '@/Test';
 
 class App extends React.Component {
     constructor(props) {
@@ -47,6 +48,7 @@ class App extends React.Component {
                                 <Link to="/canvas" className="nav-item nav-link">Canvas</Link>
                                 <Link to="/assignment" className="nav-item nav-link">Assignment</Link>
                                 <Link to="/moderation" className="nav-item nav-link">Moderation</Link>
+                                <Link to="/test" className="nav-item nav-link">Test</Link>
                                 <a onClick={this.logout} className="nav-item nav-link">Logout</a>
                             </div>
                         </nav>
@@ -60,6 +62,7 @@ class App extends React.Component {
                                     <PrivateRoute exact path="/canvas" component={Canvas} />
                                     <PrivateRoute exact path="/assignment" component={Assignment} />
                                     <PrivateRoute exact path="/moderation" component={Moderation} />
+                                    <PrivateRoute exact path="/test/:id" component={Test} />
                                     <Route path="/login" component={LoginPage} />
                                 </div>
                             </div>

@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = {
     mode: 'development',
     resolve: {
-        extensions: ['.js', '.jsx']
+        extensions: ['.js', '.jsx', '.css']
     },
     module: {
         rules: [
@@ -12,11 +12,12 @@ module.exports = {
                 test: /\.jsx?$/,
                 loader: 'babel-loader',
                 query: {compact: false}
-            }
+            },
+            { test: /\.css$/, use: [ 'style-loader', 'css-loader' ] }
         ]
     },
     resolve: {
-        extensions: ['.js', '.jsx'],
+        extensions: ['.js', '.jsx', '.css'],
         alias: {
             '@': path.resolve(__dirname, 'src/'),
         }

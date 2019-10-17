@@ -13,6 +13,7 @@ import { Assignment } from '@/AdminPage';
 import { Marking } from '@/Marking';
 import { Moderation } from '@/Moderation';
 import { Test } from '@/Test';
+import { User } from '@/User';
 
 class App extends React.Component {
     constructor(props) {
@@ -47,6 +48,7 @@ class App extends React.Component {
                             <div className="navbar-nav">
                                 <Link to="/" className="nav-item nav-link">Home</Link>
                                 {isAdmin && <Link to="/admin" className="nav-item nav-link">Admin</Link>}
+                                {isAdmin && <Link to="/users" className="nav-item nav-link">User</Link>}
                                 <Link to="/course" className="nav-item nav-link">Course</Link>
                                 <Link to="/submissions" className="nav-item nav-link">Submission</Link>
                                 <Link to="/moderation" className="nav-item nav-link">Moderation</Link>
@@ -67,6 +69,7 @@ class App extends React.Component {
                                     <PrivateRoute exact path="/markings/:id" component={Marking} />
                                     <PrivateRoute exact path="/moderation" component={Moderation} />
                                     <PrivateRoute exact path="/test/:id" component={Test} />
+                                    <PrivateRoute exact path="/users" component={User}/>
                                     <Route path="/login" component={LoginPage} />
                                 </div>
                             </div>

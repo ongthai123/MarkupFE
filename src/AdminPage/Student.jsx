@@ -20,7 +20,7 @@ class Student extends React.Component {
     }
 
     componentDidMount() {
-        userService.getAll().then(users => this.setState({ users }));
+        // userService.getAll().then(users => this.setState({ users }));
 
         this.loadData();
     }
@@ -48,7 +48,7 @@ class Student extends React.Component {
     }
 
     onSelectColor = (event) => {
-
+        const id = this.props.match.params.id;
         let fileObj = event.target.files[0];
 
         //just pass the fileObj as parameter
@@ -91,23 +91,39 @@ class Student extends React.Component {
                     let newArray = result.filter(value => Object.keys(value).length !== 0);
                     console.log("result:", newArray)
 
-                    const requestOptions = { 
-                        method: 'POST', 
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                          }, 
-                        body: JSON.stringify(newArray)};
+                    let formData = new FormData();
+                    // for (const student in newArray) {
+                    //     formData.append('students', student)
+                    // }
+                    for (var i = 0; i < newArray.length; i++) {
+                        formData.append("Students[" + i + "].StudentId", newArray[i].StudentId)
+                        formData.append("Students[" + i + "].FirstName", newArray[i].FirstName)
+                        formData.append("Students[" + i + "].LastName", newArray[i].LastName)
+                        formData.append("Students[" + i + "].Email", newArray[i].Email)
+                    }
+                    formData.append('courseId', id)
+
+                    const requestOptions = {
+                        method: 'POST',
+                        // headers: {
+                        //     ...authHeader(), ...{
+                        //         'Accept': 'application/json',
+                        //         'Content-Type': 'application/json'
+                        //     }
+                        // },
+                        headers: authHeader(),
+                        body: formData
+                    };
                     fetch(`${config.apiUrl}/api/student/create`, requestOptions)
-                    .then(() => this.handleCRUDModal(""))
-                    .then(() => this.loadData())
-                        // .then(r => r.json().then(data => ({ status: r.status, body: data })))
-                        // .then(obj => {
-                        //     console.log("Assignments: ", obj.body)
-                            // this.setState({
-                            //     assignments: obj.body
-                            // })
-                        // });
+                        .then(() => this.handleCRUDModal(""))
+                        .then(() => this.loadData())
+                    // .then(r => r.json().then(data => ({ status: r.status, body: data })))
+                    // .then(obj => {
+                    //     console.log("Assignments: ", obj.body)
+                    // this.setState({
+                    //     assignments: obj.body
+                    // })
+                    // });
                 });
             }
         });

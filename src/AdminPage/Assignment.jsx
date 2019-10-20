@@ -12,15 +12,17 @@ class Assignment extends React.Component {
         super(props);
 
         this.state = {
+            currentUser: authenticationService.currentUserValue,
             users: null,
             assignments: null,
             isCRUDModalOpen: false,
-            crudModalTitle: ""
+            crudModalTitle: "",
+            inputValue: ""
         };
     }
 
     componentDidMount() {
-        userService.getAll().then(users => this.setState({ users }));
+        // userService.getAll().then(users => this.setState({ users }));
 
         this.loadData();
     }
@@ -29,7 +31,7 @@ class Assignment extends React.Component {
         const id = this.props.match.params.id;
 
         const requestOptions = { method: 'GET', headers: authHeader() };
-        fetch(`${config.apiUrl}/api/assignment/${id}`/*, requestOptions*/)
+        fetch(`${config.apiUrl}/api/assignment/${id}`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
                 console.log("Assignments: ", obj.body)
@@ -37,6 +39,7 @@ class Assignment extends React.Component {
                     assignments: obj.body
                 })
             });
+
     }
 
     handleCRUDModal = (crudModalTitle) => {
@@ -47,8 +50,87 @@ class Assignment extends React.Component {
         this.setState({ isCRUDModalOpen: !isCRUDModalOpen })
     }
 
+    onSelectHandler = (event, data) => {
+
+        let selectValue = event.target.textContent;
+        // console.log(selectValue);
+        const { key } = data.options.find(o => o.text === selectValue);
+
+        this.setState({ selectValue, key })
+        // console.log("Key: ", key)
+
+    }
+
+    onInputHandler = (e) => {
+        let inputValue = e.target.value
+        this.setState({ inputValue })
+        // console.log("inputValue: ", inputValue)
+    }
+
+    onFileHandler = (e, type) => {
+
+        console.log("E: ", e.target.files)
+        console.log("type: ", type)
+
+        let files = [];
+
+        Array.from(e.target.files).forEach(file => {
+            files.push(file)
+        });
+
+        if (type == "assignment") {
+            this.setState({ assignmentFiles: files })
+        }
+        else if (type == "criteria") {
+            this.setState({ criteriaFiles: files })
+        }
+
+    }
+
     addAssignment = () => {
-        console.log("Add")
+        const { currentUser, inputValue, assignmentFiles, criteriaFiles } = this.state
+        const id = this.props.match.params.id;
+
+        let formData = new FormData();
+
+        formData.append('userId', currentUser.id)
+        formData.append('courseId', id)
+        formData.append('title', inputValue)
+
+        for (const file of assignmentFiles) {
+            formData.append('AssignmentFiles', file);
+
+        }
+
+        for (const file of criteriaFiles) {
+            formData.append('CriteriaFiles', file);
+        }
+
+        const requestOptions = {
+            headers: authHeader(),
+            method: 'POST',
+            body: formData
+
+        };
+        fetch(`${config.apiUrl}/api/assignment/create`, requestOptions)
+            .then(() => this.handleCRUDModal(""))
+            .then(() => this.loadData())
+    }
+
+    previewFile = (assignment, type) => {
+        console.log(assignment)
+        console.log(type)
+
+        fetch(`${config.apiUrl}/api/assignment/${type}/${assignment.id}`, {
+            headers: authHeader(),
+            method: 'GET',
+        })
+            .then(r => {
+                console.log("assignment: ", r)
+            });
+        this.setState({
+            apiUrl: `${config.apiUrl}/api/assignment/`+ type + "/" + assignment.id
+        })
     }
 
     editAssignment = () => {
@@ -60,7 +142,7 @@ class Assignment extends React.Component {
     }
 
     render() {
-        const { users, isCRUDModalOpen, crudModalTitle, assignments } = this.state;
+        const { users, isCRUDModalOpen, crudModalTitle, assignments, criterias } = this.state;
 
         let tableData = null;
 
@@ -70,9 +152,9 @@ class Assignment extends React.Component {
                     <td>{assignment.courseTitle}</td>
                     <td>{assignment.title}</td>
                     <td>
-                        {/* <Link to={"/assignments/" + assignment.id}><button className="ui brown button"><i className="book icon" style={{ margin: 0 }}></i></button></Link> */}
-                        {/* <Link to={"/assignments/" + assignment.id}><button className="ui blue button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
                         <Link to={"/submissions/" + assignment.id}><button className="ui pink button"><i className="user icon" style={{ margin: 0 }}></i></button></Link>
+                        <a href={this.state.apiUrl} onClick={() => { this.previewFile(assignment, "getassignment") }} target="_blank"><button className="ui olive button"><i className="eye icon" style={{ margin: 0 }}></i></button></a>
+                        <a href={this.state.apiUrl} onClick={() => { this.previewFile(assignment, "getcriteria") }} target="_blank"><button className="ui primary button"><i className="eye icon" style={{ margin: 0 }}></i></button></a>
                         <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
                         <button className="ui red button" onClick={() => this.handleCRUDModal("Delete")}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
                     </td>
@@ -80,11 +162,18 @@ class Assignment extends React.Component {
             )
         }
 
-        const lecturers = [
-            { key: 1, text: 'Lecturer 69', value: 113 },
-            { key: 2, text: 'Lecturer 96', value: 246 },
-            { key: 3, text: 'Lecturer ABC', value: 357 },
-        ]
+        const modifiedCriterias = [];
+
+        if (criterias != null) {
+            criterias.forEach(element => {
+                const criteriaObject = {};
+
+                lecturerObject['key'] = element.id;
+                lecturerObject['text'] = element.id
+
+                modifiedCriterias.push(criteriaObject)
+            });
+        }
 
         return (
             <div>
@@ -116,15 +205,19 @@ class Assignment extends React.Component {
                                     control={Input}
                                     label='Title'
                                     placeholder='Title'
+                                    onChange={this.onInputHandler}
                                 />
-                                <Form.Field
+                                {/* <Form.Field
                                     control={Select}
-                                    options={lecturers}
-                                    label={{ children: 'Lecturer', htmlFor: 'form-select-control-gender' }}
-                                    placeholder='Lecturer'
+                                    options={modifiedCriterias}
+                                    label={{ children: 'Marking Criteria', htmlFor: 'form-select-control-gender' }}
+                                    placeholder='Marking Criteria'
                                     search
                                     searchInput={{ id: 'form-select-control-gender' }}
-                                />
+                                    onChange={this.onSelectHandler}
+                                /> */}
+                                <input title="Assignment" type="file" accept="application/pdf" onChange={(e) => this.onFileHandler(e, "assignment")}></input>
+                                <input title="Marking Criteria" type="file" accept="application/pdf" onChange={(e) => this.onFileHandler(e, "criteria")}></input>
                             </Form.Group>
                         </Form>
                     </Modal.Content>

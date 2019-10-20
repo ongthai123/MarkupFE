@@ -14,6 +14,7 @@ import { Marking } from '@/Marking';
 import { Moderation } from '@/Moderation';
 import { Test } from '@/Test';
 import { User } from '@/User';
+import { Submission } from '../Submission';
 
 class App extends React.Component {
     constructor(props) {
@@ -50,9 +51,9 @@ class App extends React.Component {
                                 {isAdmin && <Link to="/admin" className="nav-item nav-link">Admin</Link>}
                                 {isAdmin && <Link to="/users" className="nav-item nav-link">User</Link>}
                                 <Link to="/course" className="nav-item nav-link">Course</Link>
-                                <Link to="/submissions" className="nav-item nav-link">Submission</Link>
+                                {/* <Link to="/markings" className="nav-item nav-link">Submission</Link> */}
                                 <Link to="/moderation" className="nav-item nav-link">Moderation</Link>
-                                <Link to="/test" className="nav-item nav-link">Test</Link>
+                                {/* <Link to="/test" className="nav-item nav-link">Test</Link> */}
                                 <a onClick={this.logout} className="nav-item nav-link">Logout</a>
                             </div>
                         </nav>
@@ -63,9 +64,10 @@ class App extends React.Component {
                                 <div className="col-md-12">
                                     <PrivateRoute exact path="/" component={HomePage} />
                                     <PrivateRoute path="/admin" roles={[Role.Admin]} component={AdminPage} />
-                                    <PrivateRoute exact path="/course" roles={[Role.Admin]} component={Course} />
-                                    <PrivateRoute exact path="/students/:id" roles={[Role.Admin]} component={Student} />
-                                    <PrivateRoute exact path="/assignments/:id" roles={[Role.Admin]} component={Assignment} />
+                                    <PrivateRoute exact path="/course" component={Course} />
+                                    <PrivateRoute exact path="/students/:id" component={Student} />
+                                    <PrivateRoute exact path="/assignments/:id" component={Assignment} />
+                                    <PrivateRoute exact path="/submissions/:id" component={Submission} />
                                     <PrivateRoute exact path="/markings/:id" component={Marking} />
                                     <PrivateRoute exact path="/moderation" component={Moderation} />
                                     <PrivateRoute exact path="/test/:id" component={Test} />

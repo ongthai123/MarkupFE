@@ -6,7 +6,7 @@ import { userService, authenticationService } from '@/_services';
 import { authHeader, handleResponse } from '@/_helpers';
 import { Student } from '../AdminPage/Student';
 
-class Submission extends React.Component {
+class Marking extends React.Component {
     constructor(props) {
         super(props);
 
@@ -296,4 +296,4 @@ class Submission extends React.Component {
     }
 }
 
-export { Submission };
+export { Marking };

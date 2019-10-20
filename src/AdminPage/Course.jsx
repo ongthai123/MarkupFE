@@ -2,15 +2,17 @@ import React from 'react';
 import { Button, Header, Icon, Image, Modal, Form, Input, Select } from 'semantic-ui-react'
 import { Router, Route, Link } from 'react-router-dom';
 
+
 import config from 'config';
 import { userService, authenticationService } from '@/_services';
-import { authHeader, handleResponse } from '@/_helpers';
+import { authHeader, handleResponse, history, Role } from '@/_helpers';
 
 class Course extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            currentUser: authenticationService.currentUserValue,
             users: null,
             courses: null,
             lecturers: null,
@@ -21,7 +23,9 @@ class Course extends React.Component {
     }
 
     componentDidMount() {
-        userService.getAll().then(users => this.setState({ users }));
+        // userService.getAll().then(users => this.setState({ users }));
+        const { currentUser } = this.state;
+        userService.getById(currentUser.id).then(userFromApi => this.setState({ userFromApi }));
 
         this.loadData();
     }
@@ -60,44 +64,37 @@ class Course extends React.Component {
         let selectValue = event.target.textContent;
         // console.log(selectValue);
 
-        
+
         const { key } = data.options.find(o => o.text === selectValue);
-        
-        this.setState({selectValue, key})
+
+        this.setState({ selectValue, key })
         console.log("Key: ", key)
-        
+
 
     }
 
     onInputHandler = (e) => {
         let inputValue = e.target.value
-        this.setState({inputValue})
+        this.setState({ inputValue })
         console.log("inputValue: ", inputValue)
     }
 
     addCourse = () => {
-        const {key, inputValue} = this.state
+        const { key, inputValue } = this.state
 
         let formData = new FormData();
         formData.append('lecturerId', key)
         formData.append('title', inputValue)
 
-        const requestOptions = { 
-            method: 'POST', 
-            headers: authHeader(), 
+        const requestOptions = {
+            method: 'POST',
+            headers: authHeader(),
             body: formData
-        
+
         };
         fetch(`${config.apiUrl}/api/course/create`, requestOptions)
-        .then(() => this.handleCRUDModal(""))
-        .then(() => this.loadData())
-            // .then(r => r.json().then(data => ({ status: r.status, body: data })))
-            // .then(obj => {
-            //     console.log("Courses: ", obj.body)
-            //     this.setState({
-            //         courses: obj.body
-            //     })
-            // });
+            .then(() => this.handleCRUDModal(""))
+            .then(() => this.loadData())
     }
 
     editCourse = () => {
@@ -109,27 +106,56 @@ class Course extends React.Component {
     }
 
     render() {
-        const { users, isCRUDModalOpen, crudModalTitle, courses, lecturers } = this.state;
+        const { users, isCRUDModalOpen, crudModalTitle, courses, lecturers, currentUser } = this.state;
 
         let tableData = null;
 
         if (courses != null) {
-            tableData = courses.map(course =>
-                <tr key={course.id}>
-                    <td>{course.title}</td>
-                    <td>{course.lecturerName}</td>
-                    <td>
-                        <Link to={"/assignments/" + course.id}><button className="ui brown button"><i className="book icon" style={{ margin: 0 }}></i></button></Link>
-                        <Link to={"/students/" + course.id}><button className="ui blue button"><i className="user icon" style={{ margin: 0 }}></i></button></Link>
-                        <Link to={"/submissions/" + course.id}><button className="ui pink button"><i className="user icon" style={{ margin: 0 }}></i></button></Link>
-                        <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
-                        <button className="ui red button" onClick={() => this.handleCRUDModal("Delete")}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
-                    </td>
-                </tr>
-            )
+            if (currentUser.role == Role.Admin) {
+                tableData = courses.map(course =>
+                    <tr key={course.id}>
+                        <td>{course.title}</td>
+                        <td>{course.lecturerName}</td>
+                        <td>
+                            <Link to={"/assignments/" + course.id}><button className="ui brown button"><i className="book icon" style={{ margin: 0 }}></i></button></Link>
+                            <Link to={"/students/" + course.id}><button className="ui blue button"><i className="user icon" style={{ margin: 0 }}></i></button></Link>
+                            {/* <Link to={"/submissions/" + course.id}><button className="ui pink button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
+                            {/* <Link to={"/markings/" + course.id}><button className="ui violet button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
+                            <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
+                            <button className="ui red button" onClick={() => this.handleCRUDModal("Delete")}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
+                        </td>
+                    </tr>
+                )
+            }
+            else {
+                let filteredList = [];
+                courses.forEach(element => {
+                    if (element.lecturerID == currentUser.id)
+                        filteredList.push(element)
+                })
+
+                console.log("filteredList: ", filteredList)
+
+                if (filteredList.length > 0) {
+                    tableData = filteredList.map(course =>
+                        <tr key={course.id}>
+                            <td>{course.title}</td>
+                            <td>{course.lecturerName}</td>
+                            <td>
+                                <Link to={"/assignments/" + course.id}><button className="ui brown button"><i className="book icon" style={{ margin: 0 }}></i></button></Link>
+                                <Link to={"/students/" + course.id}><button className="ui blue button"><i className="user icon" style={{ margin: 0 }}></i></button></Link>
+                                {/* <Link to={"/submissions/" + course.id}><button className="ui pink button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
+                                {/* <Link to={"/markings/" + course.id}><button className="ui violet button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
+                                <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
+                                <button className="ui red button" onClick={() => this.handleCRUDModal("Delete")}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
+                            </td>
+                        </tr>
+                    )
+                }
+            }
         }
 
-        let lecturerData = null;
+        // let lecturerData = null;
         const modifiedLecturers = [];
 
         if (lecturers != null) {
@@ -138,13 +164,10 @@ class Course extends React.Component {
 
                 lecturerObject['key'] = element.id;
                 lecturerObject['text'] = element.firstName + " " + element.lastName
+                lecturerObject['value'] = element.id;
 
                 modifiedLecturers.push(lecturerObject)
             });
-
-            lecturerData = modifiedLecturers.map(lecturer =>
-                <option key={lecturer.key} value={lecturer.key}>{lecturer.text}</option>
-            )
         }
 
 
@@ -208,11 +231,11 @@ class Course extends React.Component {
                                 <Form.Field
                                     control={Select}
                                     options={modifiedLecturers}
-                                    label={{ children: 'Lecturer', htmlFor: 'form-select-control-gender' }}
+                                    label={{ children: 'Lecturer'/*, htmlFor: 'form-select-control-gender'*/ }}
                                     placeholder='Lecturer'
-                                    search
-                                    searchInput={{ id: 'form-select-control-gender' }}
-                                    value={this.state.selectValue} 
+                                    // search
+                                    // searchInput={{ id: 'form-select-control-gender' }}
+                                    // value={this.state.selectValue} 
                                     // key={modifiedLecturers.key}
                                     onChange={this.onSelectHandler}
 

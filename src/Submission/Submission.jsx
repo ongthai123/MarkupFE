@@ -53,38 +53,41 @@ class Submission extends React.Component {
                 this.setState({
                     submissions: obj.body
                 })
-            });
-
-        fetch(`${config.apiUrl}/api/assignment/get/${id}`, requestOptions)
-            .then(r => r.json().then(data => ({ status: r.status, body: data })))
-            .then(obj => {
-                console.log("Assignments: ", obj.body)
-                this.setState({
-                    assignment: obj.body
-                })
             })
             .then(() => {
-                fetch(`${config.apiUrl}/api/student/${this.state.assignment.courseId}`, requestOptions)
+                fetch(`${config.apiUrl}/api/assignment/get/${id}`, requestOptions)
                     .then(r => r.json().then(data => ({ status: r.status, body: data })))
                     .then(obj => {
-                        // console.log("Students: ", obj.body)
+                        console.log("Assignments: ", obj.body)
                         this.setState({
-                            students: obj.body
+                            assignment: obj.body
                         })
                     })
                     .then(() => {
-                        if (this.state.submissions) {
-                            const mergeById = (a1, a2) =>
-                                a1.map(itm => ({
-                                    ...a2.find((item) => (item.studentId === itm.id) && item),
-                                    ...itm
-                                }));
-                            console.log(mergeById(this.state.students, this.state.submissions));
-                            const list = mergeById(this.state.students, this.state.submissions);
-                            this.setState({ students: list })
-                        }
+                        fetch(`${config.apiUrl}/api/student/${this.state.assignment.courseId}`, requestOptions)
+                            .then(r => r.json().then(data => ({ status: r.status, body: data })))
+                            .then(obj => {
+                                // console.log("Students: ", obj.body)
+                                this.setState({
+                                    students: obj.body
+                                })
+                            })
+                            .then(() => {
+                                if (this.state.submissions) {
+                                    const mergeById = (a1, a2) =>
+                                        a1.map(itm => ({
+                                            ...a2.find((item) => (item.studentId === itm.id) && item),
+                                            ...itm
+                                        }));
+                                    console.log(mergeById(this.state.students, this.state.submissions));
+                                    const list = mergeById(this.state.students, this.state.submissions);
+                                    this.setState({ students: list })
+                                }
+                            })
                     })
             })
+
+
 
 
     }
@@ -133,7 +136,7 @@ class Submission extends React.Component {
         const { currentUser, assignment, data, files } = this.state;
         const studentId = data;
         // console.log(uploadFiles)
-        console.log(currentUser.id + " " +  studentId + " " + assignment.id)
+        console.log(currentUser.id + " " + studentId + " " + assignment.id)
 
         const formData = new FormData();
 
@@ -179,15 +182,15 @@ class Submission extends React.Component {
     }
 
     assignModerator = () => {
-        const {key, data} = this.state
+        const { key, data } = this.state
 
         fetch(`${config.apiUrl}/api/submission/assignmoderator/${data}/${key}`, {
             headers: authHeader(),
             method: 'GET',
         })
-        .then(() => this.handleCRUDModal())
-        .then(() => this.loadData())
-    
+            .then(() => this.handleCRUDModal())
+            .then(() => this.loadData())
+
     }
 
     previewFile = (student) => {
@@ -208,10 +211,10 @@ class Submission extends React.Component {
         let selectValue = event.target.textContent;
 
         const { key } = data.options.find(o => o.text === selectValue);
-        
-        this.setState({selectValue, key})
+
+        this.setState({ selectValue, key })
         console.log("Key: ", key)
-        
+
 
     }
 
@@ -234,7 +237,7 @@ class Submission extends React.Component {
         let tableData = [];
 
         if (students != null) {
-
+            console.log("tableData: ", students)
             tableData = students.map(student =>
                 <tr key={student.id}>
                     <td>{student.courseTitle}</td>
@@ -244,10 +247,16 @@ class Submission extends React.Component {
                     <td>{student.referencePath ? <Icon name="check circle" /> : null}</td>
                     <td>{student.moderator ? student.moderator.firstName + " " + student.moderator.lastName : null}</td>
                     <td style={{ textAlign: "right" }}>
-                        {student.referencePath ? null : <button className="ui green button" onClick={() => this.handleCRUDModal("Add", student.id)}><i className="cloud upload icon" style={{ margin: 0 }}></i></button>}
+                        {student.referencePath ?
+                            <button className="ui green button" disabled><i className="cloud upload icon" style={{ margin: 0 }}></i></button>
+                            :
+                            <button className="ui green button" onClick={() => this.handleCRUDModal("Add", student.id)}><i className="cloud upload icon" style={{ margin: 0 }}></i></button>}
                         <a href={this.state.apiUrl} onClick={() => { this.previewFile(student) }} target="_blank"><button className="ui primary button"><i className="eye icon" style={{ margin: 0 }}></i></button></a>
                         <button className="ui orange button" onClick={() => this.handleCRUDModal("Share", student.submissionId)}><i className="share alternate icon" style={{ margin: 0 }}></i></button>
-                        <Link><button className="ui teal button"><i className="paint brush icon" style={{ margin: 0 }}></i></button></Link>
+                        {student.referencePath ?
+                            <Link to={"/markings/" + student.submissionId}><button className="ui teal button"><i className="paint brush icon" style={{ margin: 0 }}></i></button></Link>
+                            :
+                            <button className="ui teal button" disabled><i className="paint brush icon" style={{ margin: 0 }}></i></button>}
                         <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
                         <button className="ui red button" onClick={() => this.handleCRUDModal("Delete")}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
                     </td>
@@ -287,7 +296,7 @@ class Submission extends React.Component {
                         {crudModalTitle == "Add" ? <input type="file" accept="application/pdf" onChange={this.onFileHandler}></input>
                             : crudModalTitle == "Edit" ? <input type="file" accept="application/pdf" onChange={this.onFileHandler}></input>
                                 : crudModalTitle == "Delete" ? <input type="file" accept="application/pdf" onChange={this.onFileHandler}></input>
-                                    : crudModalTitle == "Share" ? <Dropdown placeholder="Moderator" clearable options={lecturerData} selection onChange={this.onSelectHandler}/>
+                                    : crudModalTitle == "Share" ? <Dropdown placeholder="Moderator" clearable options={lecturerData} selection onChange={this.onSelectHandler} />
                                         : null}
                     </Modal.Content>
                     <Modal.Actions>

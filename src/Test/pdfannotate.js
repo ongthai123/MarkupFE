@@ -168,7 +168,22 @@ PDFAnnotate.prototype.savePdf = function () {
 	    }
 	    doc.addImage(fabricObj.toDataURL(), 'png', 0, 0);
 	});
+	// doc.save('sample.pdf');
+	return btoa(doc.output());
+}
+
+PDFAnnotate.prototype.download = function () {
+	var inst = this;
+	var doc = new jsPDF();
+	$.each(inst.fabricObjects, function (index, fabricObj) {
+	    if (index != 0) {
+	        doc.addPage();
+	        doc.setPage(index + 1);
+	    }
+	    doc.addImage(fabricObj.toDataURL(), 'png', 0, 0);
+	});
 	doc.save('sample.pdf');
+	// return btoa(doc.output());
 }
 
 PDFAnnotate.prototype.setBrushSize = function (size) {

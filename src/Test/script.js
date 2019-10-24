@@ -2,7 +2,7 @@
 
 import {PDFAnnotate} from './pdfannotate.js';
 
-var pdf = new PDFAnnotate('pdf-container', 'http://localhost:4000/api/marking/a5dfad0a-9ecf-4ace-bfa9-08d741b167a9');
+// var pdf = new PDFAnnotate('pdf-container', 'http://localhost:4000/api/marking/a5dfad0a-9ecf-4ace-bfa9-08d741b167a9');
 
 export function enableSelector(event) {
     event.preventDefault();

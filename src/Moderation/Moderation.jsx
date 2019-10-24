@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Header, Image, Modal } from 'semantic-ui-react'
-
+import { Router, Route, Link } from 'react-router-dom';
 import config from 'config';
 import { userService, authenticationService } from '@/_services';
 import { authHeader, handleResponse, Role } from '@/_helpers';
@@ -111,7 +111,7 @@ class Moderation extends React.Component {
                         <td data-label="Updated On">{submission.updatedOn}</td>
                         {/* <td data-label="Grade">{submission.grade}</td> */}
                         <td>
-                            <button className="ui yellow button"><i className="edit icon" style={{ margin: 0 }}></i></button>
+                            <Link to={"/markings/" + submission.submissionId}><button className="ui teal button"><i className="paint brush icon" style={{ margin: 0 }}></i></button></Link>
                         </td>
                     </tr>
                 )
@@ -133,7 +133,7 @@ class Moderation extends React.Component {
                             <td data-label="Updated On">{submission.updatedOn}</td>
                             {/* <td data-label="Grade">{submission.grade}</td> */}
                             <td>
-                                <button className="ui yellow button"><i className="edit icon" style={{ margin: 0 }}></i></button>
+                                <Link to={"/markings/" + submission.submissionId}><button className="ui teal button"><i className="paint brush icon" style={{ margin: 0 }}></i></button></Link>
                             </td>
                         </tr>
                     )

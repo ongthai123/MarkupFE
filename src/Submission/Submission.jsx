@@ -1,6 +1,6 @@
 import React from 'react';
 import { Router, Route, Link } from 'react-router-dom';
-import { Button, Header, Icon, Image, Modal, Form, Input, Select, Dropdown } from 'semantic-ui-react'
+import { Button, Header, Icon, Image, Modal, Form, Input, Select, Dropdown, Confirm } from 'semantic-ui-react'
 import config from 'config';
 import { userService, authenticationService } from '@/_services';
 import { authHeader, handleResponse } from '@/_helpers';
@@ -21,6 +21,7 @@ class Submission extends React.Component {
             openUploadModal: false,
             isCRUDModalOpen: false,
             crudModalTitle: "",
+            openConfirm: false,
         };
     }
 
@@ -86,10 +87,6 @@ class Submission extends React.Component {
                             })
                     })
             })
-
-
-
-
     }
 
     handleCRUDModal = (crudModalTitle, data) => {
@@ -100,29 +97,7 @@ class Submission extends React.Component {
         this.setState({ isCRUDModalOpen: !isCRUDModalOpen, data })
     }
 
-    // handleUploadModal = (studentId) => {
-    //     const { openUploadModal } = this.state;
-
-    //     this.setState({
-    //         openUploadModal: !openUploadModal,
-    //         studentId
-    //     })
-    // }
-
-    // handleCurrentSubmission = (studentId, assignmentId) => {
-    //     this.setState({
-    //         studentId,
-    //         assignmentId
-    //     })
-    //     // console.log(studentId + "- " + assignmentId)
-    //     this.handleUploadModal();
-    // }
-
     onFileHandler = (e) => {
-
-        // console.log("E: ", e.target.files)
-        // console.log("assignment: ", this.state.assignment.id)
-        // console.log("student: ", this.state.studentId)
 
         let files = [];
 
@@ -135,8 +110,6 @@ class Submission extends React.Component {
     addSubmission = () => {
         const { currentUser, assignment, data, files } = this.state;
         const studentId = data;
-        // console.log(uploadFiles)
-        console.log(currentUser.id + " " + studentId + " " + assignment.id)
 
         const formData = new FormData();
 
@@ -158,27 +131,49 @@ class Submission extends React.Component {
     }
 
     editSubmission = () => {
+        const { currentUser, assignment, data, files } = this.state;
+        // const studentId = data;
 
+        const formData = new FormData();
+
+        for (const file of files) {
+            formData.append('Files', file);
+        }
+        formData.append('UserId', currentUser.id)
+        formData.append('AssignmentId', assignment.id)
+        formData.append('SubmissionId', data)
+
+        fetch(`${config.apiUrl}/api/submission/edit`, {
+            headers: authHeader(),
+            method: 'POST',
+            body: formData,
+        })
+            .then(() => this.handleCRUDModal())
+            .then((response => this.loadData()))
     }
 
-    deleteSubmission = (submission) => {
-        // console.log(submission)
+    handleConfirm = (id) => {
+        const { openConfirm } = this.state;
 
-        const id = submission.id;
+        this.setState({
+            openConfirm: !openConfirm,
+            deleteId: id
+        })
+    }
 
-        console.log(id)
+
+    delete = () => {
+
         const formData = new FormData();
-        formData.append('Id', id)
+        formData.append('id', this.state.deleteId)
 
-        for (var value of formData.entries()) {
-            console.log(value);
-        }
         fetch(`${config.apiUrl}/api/submission/delete`, {
             headers: authHeader(),
             method: 'POST',
             body: formData,
         })
             .then((response => this.loadData()))
+            .then(() => this.handleConfirm())
     }
 
     assignModerator = () => {
@@ -215,11 +210,10 @@ class Submission extends React.Component {
         this.setState({ selectValue, key })
         console.log("Key: ", key)
 
-
     }
 
     render() {
-        const { currentUser, userFromApi, submissions, assignments, students, lecturers, files, openUploadModal, isCRUDModalOpen, crudModalTitle } = this.state;
+        const { currentUser, userFromApi, submissions, assignments, students, lecturers, files, openUploadModal, isCRUDModalOpen, crudModalTitle, openConfirm } = this.state;
 
         let lecturerData = [];
         if (lecturers != null) {
@@ -251,14 +245,17 @@ class Submission extends React.Component {
                             <button className="ui green button" disabled><i className="cloud upload icon" style={{ margin: 0 }}></i></button>
                             :
                             <button className="ui green button" onClick={() => this.handleCRUDModal("Add", student.id)}><i className="cloud upload icon" style={{ margin: 0 }}></i></button>}
+                        
                         <a href={this.state.apiUrl} onClick={() => { this.previewFile(student) }} target="_blank"><button className="ui primary button"><i className="eye icon" style={{ margin: 0 }}></i></button></a>
                         <button className="ui orange button" onClick={() => this.handleCRUDModal("Share", student.submissionId)}><i className="share alternate icon" style={{ margin: 0 }}></i></button>
+                        
                         {student.referencePath ?
                             <Link to={"/markings/" + student.submissionId}><button className="ui teal button"><i className="paint brush icon" style={{ margin: 0 }}></i></button></Link>
                             :
                             <button className="ui teal button" disabled><i className="paint brush icon" style={{ margin: 0 }}></i></button>}
-                        <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
-                        <button className="ui red button" onClick={() => this.handleCRUDModal("Delete")}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
+
+                        <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit", student.submissionId)}><i className="edit icon" style={{ margin: 0 }}></i></button>
+                        <button className="ui red button" onClick={() => this.handleConfirm(student.submissionId)}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
                     </td>
                 </tr>
             )
@@ -295,7 +292,7 @@ class Submission extends React.Component {
                     <Modal.Content>
                         {crudModalTitle == "Add" ? <input type="file" accept="application/pdf" onChange={this.onFileHandler}></input>
                             : crudModalTitle == "Edit" ? <input type="file" accept="application/pdf" onChange={this.onFileHandler}></input>
-                                : crudModalTitle == "Delete" ? <input type="file" accept="application/pdf" onChange={this.onFileHandler}></input>
+                                // : crudModalTitle == "Delete" ? <input type="file" accept="application/pdf" onChange={this.onFileHandler}></input>
                                     : crudModalTitle == "Share" ? <Dropdown placeholder="Moderator" clearable options={lecturerData} selection onChange={this.onSelectHandler} />
                                         : null}
                     </Modal.Content>
@@ -308,10 +305,10 @@ class Submission extends React.Component {
                                 <Button primary onClick={() => this.editSubmission()}>
                                     {crudModalTitle} <Icon name='chevron right' />
                                 </Button>
-                                : crudModalTitle == "Delete" ?
-                                    <Button primary onClick={() => this.deleteSubmission()}>
-                                        {crudModalTitle} <Icon name='chevron right' />
-                                    </Button>
+                                // : crudModalTitle == "Delete" ?
+                                //     <Button primary onClick={() => this.deleteSubmission()}>
+                                //         {crudModalTitle} <Icon name='chevron right' />
+                                //     </Button>
                                     : crudModalTitle == "Share" ?
                                         <Button primary onClick={() => this.assignModerator()}>
                                             {crudModalTitle} <Icon name='chevron right' />
@@ -321,6 +318,15 @@ class Submission extends React.Component {
                         }
                     </Modal.Actions>
                 </Modal>
+
+                <Confirm
+                    open={openConfirm}
+                    onCancel={this.handleConfirm}
+                    onConfirm={this.delete}
+                    size='tiny'
+                    content='Do you want to DELETE this?'
+                    style={{ maxHeight: "200px", verticalAlign: "center", margin: "auto" }}
+                />
             </div>
         );
     }

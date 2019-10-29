@@ -1,26 +1,29 @@
 import React from 'react';
-import { Button, Header, Icon, Image, Modal, Form, Input, Select } from 'semantic-ui-react'
+import { Button, Header, Icon, Image, Modal, Form, Input, Select, Confirm, Message } from 'semantic-ui-react'
 import { Router, Route, Link } from 'react-router-dom';
 import { OutTable, ExcelRenderer } from 'react-excel-renderer';
 
 import config from 'config';
 import { userService, authenticationService } from '@/_services';
-import { authHeader, handleResponse } from '@/_helpers';
-
+import { authHeader, handleResponse, history, Role } from '@/_helpers';
 class Student extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            currentUser: authenticationService.currentUserValue,
             users: null,
             students: null,
             isCRUDModalOpen: false,
-            crudModalTitle: ""
+            crudModalTitle: "",
+            openConfirm: false,
         };
     }
 
     componentDidMount() {
         // userService.getAll().then(users => this.setState({ users }));
+        const { currentUser } = this.state;
+        userService.getById(currentUser.id).then(userFromApi => this.setState({ userFromApi }));
 
         this.loadData();
     }
@@ -39,12 +42,71 @@ class Student extends React.Component {
             });
     }
 
-    handleCRUDModal = (crudModalTitle) => {
+    handleCRUDModal = (crudModalTitle, studentData) => {
         const { isCRUDModalOpen } = this.state;
 
         this.setState({ crudModalTitle })
 
-        this.setState({ isCRUDModalOpen: !isCRUDModalOpen })
+        this.setState({ isCRUDModalOpen: !isCRUDModalOpen, studentData })
+    }
+
+    handleField = (field, e) => {
+        // console.log(field)
+        // console.log(e.target.value)
+
+        this.setState({
+            [field]: e.target.value
+        })
+    }
+
+    editStudent = () => {
+        const { selectValue, firstName, lastName, email, studentData } = this.state;
+
+        let formData = new FormData();
+        formData.append('firstName', firstName)
+        formData.append('lastName', lastName)
+        formData.append('email', email)
+        // formData.append('role', selectValue)
+        formData.append('studentId', studentData.id)
+
+        const requestOptions = {
+            method: 'POST',
+            headers: authHeader(),
+            body: formData
+        };
+
+        fetch(`${config.apiUrl}/api/student/edit`, requestOptions)
+            .then(() => this.handleCRUDModal(""))
+            .then(() => this.loadData())
+
+        this.setState({
+            firstName: "undefined",
+            lastName: "undefined",
+            email: "undefined"
+        })
+    }
+
+    handleConfirm = (id) => {
+        const { openConfirm } = this.state;
+
+        this.setState({
+            openConfirm: !openConfirm,
+            deleteId: id
+        })
+    }
+
+    delete = () => {
+
+        const formData = new FormData();
+        formData.append('id', this.state.deleteId)
+
+        fetch(`${config.apiUrl}/api/student/delete`, {
+            headers: authHeader(),
+            method: 'POST',
+            body: formData,
+        })
+            .then((response => this.loadData()))
+            .then(() => this.handleConfirm())
     }
 
     onSelectColor = (event) => {
@@ -129,20 +191,8 @@ class Student extends React.Component {
         });
     }
 
-    addStudent = () => {
-        console.log("Add")
-    }
-
-    editStudent = () => {
-        console.log("Edit")
-    }
-
-    deleteStudent = () => {
-        console.log("Delete")
-    }
-
     render() {
-        const { users, isCRUDModalOpen, crudModalTitle, students } = this.state;
+        const { currentUser, users, isCRUDModalOpen, crudModalTitle, students, openConfirm } = this.state;
 
         let tableData = null;
 
@@ -155,8 +205,8 @@ class Student extends React.Component {
                     <td>
                         {/* <Link to={"/assignments/" + student.id}><button className="ui brown button"><i className="book icon" style={{ margin: 0 }}></i></button></Link> */}
                         {/* <Link to={"/students/" + student.id}><button className="ui blue button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
-                        <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
-                        <button className="ui red button" onClick={() => this.handleCRUDModal("Delete")}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
+                        <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit", student)}><i className="edit icon" style={{ margin: 0 }}></i></button>
+                        <button className="ui red button" onClick={() => this.handleConfirm(student.id)}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
                     </td>
                 </tr>
             )
@@ -173,7 +223,11 @@ class Student extends React.Component {
                 <div className="ui grid">
                     <div className="ten wide column"><h1>Student</h1></div>
                     <div className="six wide column">
-                        <button className="ui inverted green button" style={{ float: "right" }} onClick={() => this.handleCRUDModal("Add")}>Add New</button>
+                        {currentUser.role == Role.Admin ?
+                            <button className="ui inverted green button" style={{ float: "right" }} onClick={() => this.handleCRUDModal("Add")}>Add New</button>
+                            :
+                            null
+                        }
                     </div>
                 </div>
                 <table className="ui selectable inverted table" style={{ textAlign: "center" }}>
@@ -192,9 +246,29 @@ class Student extends React.Component {
                 <Modal open={isCRUDModalOpen} onClose={() => this.handleCRUDModal("")} size="small" style={{ maxHeight: "300px", verticalAlign: "center", margin: "auto" }}>
                     <Modal.Header>{crudModalTitle}</Modal.Header>
                     <Modal.Content>
-                        <Form>
+                        {/* <Form>
                             <input type="file" onChange={(e) => this.onSelectColor(e)}></input>
-                        </Form>
+                        </Form> */}
+                        {crudModalTitle == "Add" ?
+                            <Form>
+                                <input type="file" onChange={(e) => this.onSelectColor(e)}></input>
+                            </Form>
+                            :
+                            <Form>
+                                <Form.Group widths='equal'>
+                                    <Form.Field label='FirstName' control='input' onChange={e => this.handleField("firstName", e)} />
+                                    <Form.Field label='LastName' control='input' onChange={e => this.handleField("lastName", e)} />
+                                </Form.Group>
+                                <Form.Group widths="equal">
+                                    <Form.Field label='Email' control='input' onChange={e => this.handleField("email", e)} />
+                                </Form.Group>
+                                <Message
+                                    error
+                                    header='Action Forbidden'
+                                    content='You can only sign up for an account once with a given e-mail address.'
+                                />
+                            </Form>
+                        }
                     </Modal.Content>
                     <Modal.Actions>
                         {crudModalTitle == "Add" ?
@@ -206,13 +280,23 @@ class Student extends React.Component {
                                     {crudModalTitle} <Icon name='chevron right' />
                                 </Button>
                                 :
-                                <Button primary onClick={() => this.deleteStudent()}>
-                                    {crudModalTitle} <Icon name='chevron right' />
-                                </Button>
+                                null
+                            // <Button primary onClick={() => this.deleteStudent()}>
+                            //     {crudModalTitle} <Icon name='chevron right' />
+                            // </Button>
                         }
                     </Modal.Actions>
                 </Modal>
                 {/* CRUD Modal End */}
+
+                <Confirm
+                    open={openConfirm}
+                    onCancel={this.handleConfirm}
+                    onConfirm={this.delete}
+                    size='tiny'
+                    content='Do you want to DELETE this?'
+                    style={{ maxHeight: "200px", verticalAlign: "center", margin: "auto" }}
+                />
 
             </div>
         );

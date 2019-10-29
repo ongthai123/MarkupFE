@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Header, Icon, Image, Modal, Form, Input, Select } from 'semantic-ui-react'
+import { Button, Header, Icon, Image, Modal, Form, Input, Select, Confirm } from 'semantic-ui-react'
 import { Router, Route, Link } from 'react-router-dom';
 
 
@@ -101,12 +101,31 @@ class Course extends React.Component {
         console.log("Edit")
     }
 
-    deleteCourse = () => {
-        console.log("Delete")
+    handleConfirm = (id) => {
+        const { openConfirm } = this.state;
+
+        this.setState({
+            openConfirm: !openConfirm,
+            deleteId: id
+        })
+    }
+
+    delete = () => {
+
+        const formData = new FormData();
+        formData.append('id', this.state.deleteId)
+
+        fetch(`${config.apiUrl}/api/course/delete`, {
+            headers: authHeader(),
+            method: 'POST',
+            body: formData,
+        })
+            .then((response => this.loadData()))
+            .then(() => this.handleConfirm())
     }
 
     render() {
-        const { users, isCRUDModalOpen, crudModalTitle, courses, lecturers, currentUser } = this.state;
+        const { users, isCRUDModalOpen, crudModalTitle, courses, lecturers, currentUser, openConfirm } = this.state;
 
         let tableData = null;
 
@@ -119,10 +138,8 @@ class Course extends React.Component {
                         <td>
                             <Link to={"/assignments/" + course.id}><button className="ui brown button"><i className="book icon" style={{ margin: 0 }}></i></button></Link>
                             <Link to={"/students/" + course.id}><button className="ui blue button"><i className="user icon" style={{ margin: 0 }}></i></button></Link>
-                            {/* <Link to={"/submissions/" + course.id}><button className="ui pink button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
-                            {/* <Link to={"/markings/" + course.id}><button className="ui violet button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
                             <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
-                            <button className="ui red button" onClick={() => this.handleCRUDModal("Delete")}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
+                            <button className="ui red button" onClick={() => this.handleConfirm(course.id)}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
                         </td>
                     </tr>
                 )
@@ -144,10 +161,6 @@ class Course extends React.Component {
                             <td>
                                 <Link to={"/assignments/" + course.id}><button className="ui brown button"><i className="book icon" style={{ margin: 0 }}></i></button></Link>
                                 <Link to={"/students/" + course.id}><button className="ui blue button"><i className="user icon" style={{ margin: 0 }}></i></button></Link>
-                                {/* <Link to={"/submissions/" + course.id}><button className="ui pink button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
-                                {/* <Link to={"/markings/" + course.id}><button className="ui violet button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
-                                <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
-                                <button className="ui red button" onClick={() => this.handleCRUDModal("Delete")}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
                             </td>
                         </tr>
                     )
@@ -155,7 +168,6 @@ class Course extends React.Component {
             }
         }
 
-        // let lecturerData = null;
         const modifiedLecturers = [];
 
         if (lecturers != null) {
@@ -170,14 +182,16 @@ class Course extends React.Component {
             });
         }
 
-
-
         return (
             <div>
                 <div className="ui grid">
                     <div className="ten wide column"><h1>Course</h1></div>
                     <div className="six wide column">
-                        <button className="ui inverted green button" style={{ float: "right" }} onClick={() => this.handleCRUDModal("Add")}>Add New</button>
+                        {currentUser.role == Role.Admin ?
+                            <button className="ui inverted green button" style={{ float: "right" }} onClick={() => this.handleCRUDModal("Add")}>Add New</button>
+                            :
+                            null
+                        }
                     </div>
                 </div>
                 <table className="ui selectable inverted table" style={{ textAlign: "center" }}>
@@ -195,30 +209,6 @@ class Course extends React.Component {
                 <Modal open={isCRUDModalOpen} onClose={() => this.handleCRUDModal("")} size="small" style={{ maxHeight: "300px", verticalAlign: "center", margin: "auto" }}>
                     <Modal.Header>{crudModalTitle}</Modal.Header>
                     <Modal.Content>
-                        {/* <div className="ui grid">
-                            <div className="row">
-                                <div className="eight wide column" style={{margin: "auto", verticalAlign:"center", textAlign:"center"}}>
-                                    <div >
-                                        <div className="row">Title</div>
-                                        <div className="row">
-                                            <div className="ui input">
-                                                <input type="text" placeholder="Title..." />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="eight wide column">
-                                    <div className="row">
-                                        Lecturer
-                                    </div>
-                                    <div className="row">
-                                        <select className="ui search dropdown" placeholder>
-                                            <option disabled value="0">Select A Lecturer</option>
-                                            {lecturerData}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div> */}
                         <Form>
                             <Form.Group widths='equal'>
                                 <Form.Field
@@ -262,6 +252,15 @@ class Course extends React.Component {
                     </Modal.Actions>
                 </Modal>
                 {/* CRUD Modal End */}
+
+                <Confirm
+                    open={openConfirm}
+                    onCancel={this.handleConfirm}
+                    onConfirm={this.delete}
+                    size='tiny'
+                    content='Do you want to DELETE this?'
+                    style={{ maxHeight: "200px", verticalAlign: "center", margin: "auto" }}
+                />
 
             </div>
         );

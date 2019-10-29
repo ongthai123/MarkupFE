@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button, Header, Icon, Image, Modal, Form, Input, Select } from 'semantic-ui-react'
+import { Button, Header, Icon, Image, Modal, Form, Input, Select, Confirm } from 'semantic-ui-react'
 import { Router, Route, Link } from 'react-router-dom';
 
 import config from 'config';
@@ -129,7 +129,7 @@ class Assignment extends React.Component {
                 console.log("assignment: ", r)
             });
         this.setState({
-            apiUrl: `${config.apiUrl}/api/assignment/`+ type + "/" + assignment.id
+            apiUrl: `${config.apiUrl}/api/assignment/` + type + "/" + assignment.id
         })
     }
 
@@ -137,12 +137,31 @@ class Assignment extends React.Component {
         console.log("Edit")
     }
 
-    deleteAssignment = () => {
-        console.log("Delete")
+    handleConfirm = (id) => {
+        const { openConfirm } = this.state;
+
+        this.setState({
+            openConfirm: !openConfirm,
+            deleteId: id
+        })
+    }
+
+    delete = () => {
+
+        const formData = new FormData();
+        formData.append('id', this.state.deleteId)
+
+        fetch(`${config.apiUrl}/api/assignment/delete`, {
+            headers: authHeader(),
+            method: 'POST',
+            body: formData,
+        })
+            .then((response => this.loadData()))
+            .then(() => this.handleConfirm())
     }
 
     render() {
-        const { users, isCRUDModalOpen, crudModalTitle, assignments, criterias } = this.state;
+        const { users, isCRUDModalOpen, crudModalTitle, assignments, criterias, openConfirm } = this.state;
 
         let tableData = null;
 
@@ -155,8 +174,8 @@ class Assignment extends React.Component {
                         <Link to={"/submissions/" + assignment.id}><button className="ui pink button"><i className="user icon" style={{ margin: 0 }}></i></button></Link>
                         <a href={this.state.apiUrl} onClick={() => { this.previewFile(assignment, "getassignment") }} target="_blank"><button className="ui olive button"><i className="eye icon" style={{ margin: 0 }}></i></button></a>
                         <a href={this.state.apiUrl} onClick={() => { this.previewFile(assignment, "getcriteria") }} target="_blank"><button className="ui primary button"><i className="eye icon" style={{ margin: 0 }}></i></button></a>
-                        <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
-                        <button className="ui red button" onClick={() => this.handleCRUDModal("Delete")}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
+                        {/* <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button> */}
+                        <button className="ui red button" onClick={() => this.handleConfirm(assignment.id)}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
                     </td>
                 </tr>
             )
@@ -231,13 +250,23 @@ class Assignment extends React.Component {
                                     {crudModalTitle} <Icon name='chevron right' />
                                 </Button>
                                 :
-                                <Button primary onClick={() => this.deleteAssignment()}>
-                                    {crudModalTitle} <Icon name='chevron right' />
-                                </Button>
+                                null
+                            // <Button primary onClick={() => this.deleteAssignment()}>
+                            //     {crudModalTitle} <Icon name='chevron right' />
+                            // </Button>
                         }
                     </Modal.Actions>
                 </Modal>
                 {/* CRUD Modal End */}
+
+                <Confirm
+                    open={openConfirm}
+                    onCancel={this.handleConfirm}
+                    onConfirm={this.delete}
+                    size='tiny'
+                    content='Do you want to DELETE this?'
+                    style={{ maxHeight: "200px", verticalAlign: "center", margin: "auto" }}
+                />
 
             </div>
         );

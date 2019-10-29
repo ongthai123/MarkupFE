@@ -146,10 +146,10 @@ class Moderation extends React.Component {
                 <div className="ui grid">
                     <div className="ten wide column"><h1>Moderation</h1></div>
                     <div className="six wide column">
-                        <label htmlFor="hidden-new-file" className="ui inverted green button" style={{ float: "right" }}>
+                        {/* <label htmlFor="hidden-new-file" className="ui inverted green button" style={{ float: "right" }}>
                             Upload
                             <input type="file" id="hidden-new-file" style={{ display: "none" }} onChange={this.onFileHandler} required multiple></input>
-                        </label>
+                        </label> */}
                     </div>
                 </div>
                 <table className="ui selectable inverted table" style={{ textAlign: "center" }}>

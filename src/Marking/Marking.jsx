@@ -5,6 +5,7 @@ import config from 'config';
 import { userService, authenticationService } from '@/_services';
 import { authHeader, handleResponse } from '@/_helpers';
 import { Student } from '../AdminPage/Student';
+import moment from 'moment'
 
 class Marking extends React.Component {
     constructor(props) {
@@ -148,7 +149,7 @@ class Marking extends React.Component {
                 <tr key={submission.id}>
                     <td data-label="Student">{submission.student.firstName + " " + submission.student.lastName}</td>
                     <td data-label="Updated By">{submission.updatedBy.firstName + " " + submission.updatedBy.lastName}</td>
-                    <td data-label="Updated On">{submission.updatedOn}</td>
+                    <td data-label="Updated On">{moment.utc(submission.updatedOn).local().format('lll')}</td>
                     <td data-label="Grade">{submission.grade ? submission.grade : 'Unmarked'}</td>
                     <td>
                         <button className="ui black button" onClick={() => this.sendEmail(submission)}><i className="mail icon" style={{ margin: 0 }}></i></button>

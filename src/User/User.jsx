@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button, Header, Icon, Image, Modal, Form, Input, Select, Confirm } from 'semantic-ui-react'
+import { Button, Header, Icon, Image, Modal, Form, Input, Select, Confirm, Pagination } from 'semantic-ui-react'
 import { Router, Route, Link } from 'react-router-dom';
 import { OutTable, ExcelRenderer } from 'react-excel-renderer';
 
@@ -17,29 +17,43 @@ class User extends React.Component {
             isCRUDModalOpen: false,
             crudModalTitle: "",
             openConfirm: false,
+            pageSize: 10,
+            length: 0,
+            activePage: 1
         };
     }
 
     componentDidMount() {
-        userService.getAll().then(users => this.setState({ users }, () => console.log("Users: ", this.state.users)));
+        // userService.getAll().then(users => this.setState({ users }, () => console.log("Users: ", this.state.users)));
 
-        // this.loadData();
+        this.loadData();
     }
 
     loadData = () => {
-        const id = this.props.match.params.id;
+        const { activePage, pageSize } = this.state;
 
-        const requestOptions = { method: 'GET', headers: authHeader() };
+        let formData = new FormData();
+        formData.append('activePage', activePage)
+        formData.append('pageSize', pageSize)
+
+        const requestOptions = { method: 'POST', headers: authHeader(), body: formData };
         fetch(`${config.apiUrl}/api/users`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
                 console.log("Users: ", obj.body)
                 this.setState({
-                    users: obj.body
+                    users: obj.body.users,
+                    length: obj.body.length
                 })
             });
 
 
+    }
+
+    onPageChange = (e, data) => {
+        this.setState({
+            activePage: Math.ceil(data.activePage)
+        }, () => this.loadData())
     }
 
     handleCRUDModal = (crudModalTitle, userData) => {
@@ -82,10 +96,8 @@ class User extends React.Component {
                             }
                         }
                         result.push(object);
-                        // students.append('students', object)
                     }
 
-                    // students.append('students', result)
                     let newArray = result.filter(value => Object.keys(value).length !== 0);
                     console.log("result:", newArray)
 
@@ -101,14 +113,6 @@ class User extends React.Component {
                     };
                     fetch(`${config.apiUrl}/api/users/create`, requestOptions)
                         .then(() => this.handleCRUDModal(""))
-                        .then(() => this.loadData())
-                    // .then(r => r.json().then(data => ({ status: r.status, body: data })))
-                    // .then(obj => {
-                    //     console.log("Assignments: ", obj.body)
-                    // this.setState({
-                    //     assignments: obj.body
-                    // })
-                    // });
                 });
             }
         });
@@ -187,7 +191,7 @@ class User extends React.Component {
     }
 
     render() {
-        const { users, isCRUDModalOpen, crudModalTitle, openConfirm } = this.state;
+        const { users, isCRUDModalOpen, crudModalTitle, openConfirm, activePage, length, pageSize } = this.state;
 
         let roles = []
 
@@ -240,6 +244,7 @@ class User extends React.Component {
                         {tableData}
                     </tbody>
                 </table>
+                <Pagination defaultActivePage={1} totalPages={(length / pageSize)} onPageChange={this.onPageChange} />
 
                 {/* CRUD Modal Start */}
                 <Modal open={isCRUDModalOpen} onClose={() => this.handleCRUDModal("")} size="small" style={{ height: "30%", verticalAlign: "center", margin: "auto" }}>

@@ -5,6 +5,7 @@ import config from 'config';
 import { userService, authenticationService } from '@/_services';
 import { authHeader, handleResponse } from '@/_helpers';
 import { Student } from '../AdminPage/Student';
+import moment from 'moment'
 
 class Submission extends React.Component {
     constructor(props) {
@@ -239,6 +240,8 @@ class Submission extends React.Component {
                     <td>{student.firstName + " " + student.lastName}</td>
                     <td>{student.email}</td>
                     <td>{student.referencePath ? <Icon name="check circle" /> : null}</td>
+                    <td>{student.updatedOn ? moment.utc(student.updatedOn).local().format('lll') : null}</td>
+                    <td>{student.updatedBy ? student.updatedBy.firstName + " " + student.updatedBy.lastName : null}</td>
                     <td>{student.moderator ? student.moderator.firstName + " " + student.moderator.lastName : null}</td>
                     <td style={{ textAlign: "right" }}>
                         {student.referencePath ?
@@ -268,13 +271,15 @@ class Submission extends React.Component {
                     <div className="six wide column">
                     </div>
                 </div>
-                <table className="ui selectable inverted table" style={{ textAlign: "center" }}>
+                <table className="ui selectable inverted single line table" style={{ textAlign: "center" }}>
                     <thead>
                         <tr><th>Course</th>
                             <th>StudentId</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Submitted</th>
+                            <th>Last Updated</th>
+                            <th>Updated By</th>
                             <th>Moderator</th>
                             <th>Action</th>
                         </tr></thead>

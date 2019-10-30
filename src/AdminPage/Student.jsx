@@ -223,10 +223,10 @@ class Student extends React.Component {
                 <div className="ui grid">
                     <div className="ten wide column"><h1>Student</h1></div>
                     <div className="six wide column">
-                        {currentUser.role == Role.Admin ?
+                        {/* {currentUser.role == Role.Admin ? */}
                             <button className="ui inverted green button" style={{ float: "right" }} onClick={() => this.handleCRUDModal("Add")}>Add New</button>
-                            :
-                            null
+                            {/* :
+                            null */}
                         }
                     </div>
                 </div>

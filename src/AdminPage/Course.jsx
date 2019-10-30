@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Header, Icon, Image, Modal, Form, Input, Select, Confirm } from 'semantic-ui-react'
+import { Button, Header, Icon, Image, Modal, Form, Input, Select, Confirm, Pagination } from 'semantic-ui-react'
 import { Router, Route, Link } from 'react-router-dom';
 
 
@@ -18,7 +18,10 @@ class Course extends React.Component {
             lecturers: null,
             isCRUDModalOpen: false,
             crudModalTitle: "",
-            selectValue: null
+            selectValue: null,
+            pageSize: 10,
+            length: 0,
+            activePage: 1
         };
     }
 
@@ -31,17 +34,25 @@ class Course extends React.Component {
     }
 
     loadData = () => {
-        const requestOptions = { method: 'GET', headers: authHeader() };
+        const { activePage, pageSize } = this.state;
+
+        let formData = new FormData();
+        formData.append('activePage', activePage)
+        formData.append('pageSize', pageSize)
+
+        const requestOptions = { method: 'POST', headers: authHeader(), body: formData };
         fetch(`${config.apiUrl}/api/course`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
                 console.log("Courses: ", obj.body)
                 this.setState({
-                    courses: obj.body
+                    courses: obj.body.courses,
+                    length: obj.body.length
                 })
             });
 
-        fetch(`${config.apiUrl}/api/users/getallusers`, requestOptions)
+        const requestOptions2 = {method: 'GET', headers: authHeader()}
+        fetch(`${config.apiUrl}/api/users/getallusers`, requestOptions2)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
                 console.log("Lecturers: ", obj.body)
@@ -51,32 +62,31 @@ class Course extends React.Component {
             });
     }
 
-    handleCRUDModal = (crudModalTitle) => {
+    onPageChange = (e, data) => {
+        this.setState({
+            activePage: Math.ceil(data.activePage)
+        }, () => this.loadData())
+    }
+
+    handleCRUDModal = (crudModalTitle, courseData) => {
         const { isCRUDModalOpen } = this.state;
 
         this.setState({ crudModalTitle })
 
-        this.setState({ isCRUDModalOpen: !isCRUDModalOpen })
+        this.setState({ isCRUDModalOpen: !isCRUDModalOpen, courseData })
     }
 
     onSelectHandler = (event, data) => {
-
         let selectValue = event.target.textContent;
-        // console.log(selectValue);
-
 
         const { key } = data.options.find(o => o.text === selectValue);
 
         this.setState({ selectValue, key })
-        console.log("Key: ", key)
-
-
     }
 
     onInputHandler = (e) => {
         let inputValue = e.target.value
         this.setState({ inputValue })
-        console.log("inputValue: ", inputValue)
     }
 
     addCourse = () => {
@@ -98,7 +108,27 @@ class Course extends React.Component {
     }
 
     editCourse = () => {
-        console.log("Edit")
+        const { key, inputValue, courseData } = this.state
+
+        let formData = new FormData();
+        formData.append('courseId', courseData.id)
+        formData.append('lecturerId', key)
+        formData.append('title', inputValue)
+
+        const requestOptions = {
+            method: 'POST',
+            headers: authHeader(),
+            body: formData
+
+        };
+        fetch(`${config.apiUrl}/api/course/edit`, requestOptions)
+            .then(() => this.handleCRUDModal(""))
+            .then(() => this.loadData())
+
+        this.setState({
+            key: 0,
+            inputValue: "undefined"
+        })
     }
 
     handleConfirm = (id) => {
@@ -125,7 +155,7 @@ class Course extends React.Component {
     }
 
     render() {
-        const { users, isCRUDModalOpen, crudModalTitle, courses, lecturers, currentUser, openConfirm } = this.state;
+        const { users, isCRUDModalOpen, crudModalTitle, courses, lecturers, currentUser, openConfirm, activePage, length, pageSize } = this.state;
 
         let tableData = null;
 
@@ -138,7 +168,7 @@ class Course extends React.Component {
                         <td>
                             <Link to={"/assignments/" + course.id}><button className="ui brown button"><i className="book icon" style={{ margin: 0 }}></i></button></Link>
                             <Link to={"/students/" + course.id}><button className="ui blue button"><i className="user icon" style={{ margin: 0 }}></i></button></Link>
-                            <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit")}><i className="edit icon" style={{ margin: 0 }}></i></button>
+                            <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit", course)}><i className="edit icon" style={{ margin: 0 }}></i></button>
                             <button className="ui red button" onClick={() => this.handleConfirm(course.id)}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
                         </td>
                     </tr>
@@ -204,9 +234,10 @@ class Course extends React.Component {
                         {tableData}
                     </tbody>
                 </table>
+                <Pagination defaultActivePage={1} totalPages={(length / pageSize)} onPageChange={this.onPageChange} />
 
                 {/* CRUD Modal Start */}
-                <Modal open={isCRUDModalOpen} onClose={() => this.handleCRUDModal("")} size="small" style={{ maxHeight: "300px", verticalAlign: "center", margin: "auto" }}>
+                <Modal open={isCRUDModalOpen} onClose={() => this.handleCRUDModal("")} size="small" style={{ maxHeight: "400px", verticalAlign: "center", margin: "auto" }}>
                     <Modal.Header>{crudModalTitle}</Modal.Header>
                     <Modal.Content>
                         <Form>
@@ -221,12 +252,8 @@ class Course extends React.Component {
                                 <Form.Field
                                     control={Select}
                                     options={modifiedLecturers}
-                                    label={{ children: 'Lecturer'/*, htmlFor: 'form-select-control-gender'*/ }}
+                                    label={{ children: 'Lecturer'}}
                                     placeholder='Lecturer'
-                                    // search
-                                    // searchInput={{ id: 'form-select-control-gender' }}
-                                    // value={this.state.selectValue} 
-                                    // key={modifiedLecturers.key}
                                     onChange={this.onSelectHandler}
 
                                 />
@@ -245,9 +272,10 @@ class Course extends React.Component {
                                     {crudModalTitle} <Icon name='chevron right' />
                                 </Button>
                                 :
-                                <Button primary onClick={() => this.deleteCourse()}>
-                                    {crudModalTitle} <Icon name='chevron right' />
-                                </Button>
+                                null
+                                // <Button primary onClick={() => this.deleteCourse()}>
+                                //     {crudModalTitle} <Icon name='chevron right' />
+                                // </Button>
                         }
                     </Modal.Actions>
                 </Modal>

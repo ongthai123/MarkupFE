@@ -3,6 +3,14 @@ const path = require('path');
 
 module.exports = {
     mode: 'development',
+    entry: [
+        './src/index.jsx'
+    ],
+    output:{
+        path: __dirname,
+        publicPath: '/dist',
+        filename: 'bundle.js'
+    },
     resolve: {
         extensions: ['.js', '.jsx', '.css']
     },
@@ -30,7 +38,7 @@ module.exports = {
     })],
     devServer: {
         historyApiFallback: true,
-        port: 9000
+        port: 8080
     },
     externals: {
         // global app config object

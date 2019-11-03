@@ -151,6 +151,12 @@ class Submission extends React.Component {
         })
             .then(() => this.handleCRUDModal())
             .then((response => this.loadData()))
+
+        this.setState({
+            assignment: "undefined",
+            data: "undefined",
+            files: []
+        })
     }
 
     handleConfirm = (id) => {

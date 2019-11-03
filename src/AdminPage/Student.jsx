@@ -123,21 +123,19 @@ class Student extends React.Component {
                     cols: resp.cols,
                     rows: resp.rows
                 }, () => {
-                    console.log("cols: ", resp.cols)
-                    console.log("rows: ", resp.rows)
+                    // console.log("cols: ", resp.cols)
+                    // console.log("rows: ", resp.rows)
 
                     const id = this.props.match.params.id;
 
                     const students = new FormData();
-
-                    // console.log("rows[1][0]: ", resp.rows[1][0])
 
                     // let cell = null;
                     const result = [];
                     for (let i = 1; i < resp.rows.length; i++) {
                         let object = {};
                         for (let j = 0; j < resp.cols.length; j++) {
-                            console.log(resp.rows[i][j])
+                            // console.log(resp.rows[i][j])
                             if (resp.rows[i][j] == undefined) {
                                 break;
                             }
@@ -149,14 +147,11 @@ class Student extends React.Component {
                         students.append('students', object)
                     }
 
-                    // students.append('students', result)
                     let newArray = result.filter(value => Object.keys(value).length !== 0);
                     console.log("result:", newArray)
 
                     let formData = new FormData();
-                    // for (const student in newArray) {
-                    //     formData.append('students', student)
-                    // }
+
                     for (var i = 0; i < newArray.length; i++) {
                         formData.append("Students[" + i + "].StudentId", newArray[i].StudentId)
                         formData.append("Students[" + i + "].FirstName", newArray[i].FirstName)
@@ -167,25 +162,12 @@ class Student extends React.Component {
 
                     const requestOptions = {
                         method: 'POST',
-                        // headers: {
-                        //     ...authHeader(), ...{
-                        //         'Accept': 'application/json',
-                        //         'Content-Type': 'application/json'
-                        //     }
-                        // },
                         headers: authHeader(),
                         body: formData
                     };
                     fetch(`${config.apiUrl}/api/student/create`, requestOptions)
                         .then(() => this.handleCRUDModal(""))
                         .then(() => this.loadData())
-                    // .then(r => r.json().then(data => ({ status: r.status, body: data })))
-                    // .then(obj => {
-                    //     console.log("Assignments: ", obj.body)
-                    // this.setState({
-                    //     assignments: obj.body
-                    // })
-                    // });
                 });
             }
         });
@@ -200,11 +182,10 @@ class Student extends React.Component {
             tableData = students.map(student =>
                 <tr key={student.id}>
                     <td>{student.courseTitle}</td>
+                    <td>{student.studentId}</td>
                     <td>{student.firstName + " " + student.lastName}</td>
                     <td>{student.email}</td>
                     <td>
-                        {/* <Link to={"/assignments/" + student.id}><button className="ui brown button"><i className="book icon" style={{ margin: 0 }}></i></button></Link> */}
-                        {/* <Link to={"/students/" + student.id}><button className="ui blue button"><i className="user icon" style={{ margin: 0 }}></i></button></Link> */}
                         <button className="ui yellow button" onClick={() => this.handleCRUDModal("Edit", student)}><i className="edit icon" style={{ margin: 0 }}></i></button>
                         <button className="ui red button" onClick={() => this.handleConfirm(student.id)}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
                     </td>
@@ -223,20 +204,24 @@ class Student extends React.Component {
                 <div className="ui grid">
                     <div className="ten wide column"><h1>Student</h1></div>
                     <div className="six wide column">
-                        {/* {currentUser.role == Role.Admin ? */}
+                        {/* {currentUser.role == Role.Admin ?
                             <button className="ui inverted green button" style={{ float: "right" }} onClick={() => this.handleCRUDModal("Add")}>Add New</button>
-                            {/* :
-                            null */}
-                        }
+                            :
+                            null
+                        } */}
+                        <button className="ui inverted green button" style={{ float: "right" }} onClick={() => this.handleCRUDModal("Add")}>Add New</button>
                     </div>
                 </div>
                 <table className="ui selectable inverted table" style={{ textAlign: "center" }}>
                     <thead>
-                        <tr><th>Course</th>
+                        <tr>
+                            <th>Course</th>
+                            <th>StudentId</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Action</th>
-                        </tr></thead>
+                        </tr>
+                    </thead>
                     <tbody>
                         {tableData}
                     </tbody>
@@ -246,9 +231,6 @@ class Student extends React.Component {
                 <Modal open={isCRUDModalOpen} onClose={() => this.handleCRUDModal("")} size="small" style={{ maxHeight: "300px", verticalAlign: "center", margin: "auto" }}>
                     <Modal.Header>{crudModalTitle}</Modal.Header>
                     <Modal.Content>
-                        {/* <Form>
-                            <input type="file" onChange={(e) => this.onSelectColor(e)}></input>
-                        </Form> */}
                         {crudModalTitle == "Add" ?
                             <Form>
                                 <input type="file" onChange={(e) => this.onSelectColor(e)}></input>
@@ -281,9 +263,6 @@ class Student extends React.Component {
                                 </Button>
                                 :
                                 null
-                            // <Button primary onClick={() => this.deleteStudent()}>
-                            //     {crudModalTitle} <Icon name='chevron right' />
-                            // </Button>
                         }
                     </Modal.Actions>
                 </Modal>

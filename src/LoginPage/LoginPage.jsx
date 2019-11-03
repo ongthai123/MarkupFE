@@ -1,5 +1,6 @@
 import React from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { Button, Header, Icon, Image, Modal, Input, Select, Confirm, Message } from 'semantic-ui-react'
 import * as Yup from 'yup';
 
 import { authenticationService } from '@/_services';
@@ -17,9 +18,8 @@ class LoginPage extends React.Component {
     render() {
         return (
             <div className="col-md-6 offset-md-3">
-                <div className="alert alert-info">
-                    <strong>Normal User</strong> - U: user P: user<br />
-                    <strong>Administrator</strong> - U: admin P: admin
+                <div className="alert alert-info" style={{textAlign: "center"}}>
+                    <Header as='h1'>MarkUp</Header>
                 </div>
                 <h2>Login</h2>
                 <Formik

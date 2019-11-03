@@ -1,6 +1,5 @@
 import React from 'react';
 import { userService, authenticationService } from '@/_services';
-import { fabric } from 'fabric';
 import './styles.css'
 import config from 'config';
 import { authHeader, handleResponse } from '@/_helpers';

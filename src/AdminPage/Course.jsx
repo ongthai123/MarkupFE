@@ -44,7 +44,7 @@ class Course extends React.Component {
         fetch(`${config.apiUrl}/api/course`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                console.log("Courses: ", obj.body)
+                // console.log("Courses: ", obj.body)
                 this.setState({
                     courses: obj.body.courses,
                     length: obj.body.length
@@ -55,7 +55,7 @@ class Course extends React.Component {
         fetch(`${config.apiUrl}/api/users/getallusers`, requestOptions2)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                console.log("Lecturers: ", obj.body)
+                // console.log("Lecturers: ", obj.body)
                 this.setState({
                     lecturers: obj.body
                 })
@@ -181,7 +181,7 @@ class Course extends React.Component {
                         filteredList.push(element)
                 })
 
-                console.log("filteredList: ", filteredList)
+                // console.log("filteredList: ", filteredList)
 
                 if (filteredList.length > 0) {
                     tableData = filteredList.map(course =>

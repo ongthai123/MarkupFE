@@ -42,7 +42,7 @@ class Submission extends React.Component {
         fetch(`${config.apiUrl}/api/users/getallusers`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                console.log("Lecturers: ", obj.body)
+                // console.log("Lecturers: ", obj.body)
                 this.setState({
                     lecturers: obj.body
                 })
@@ -51,7 +51,7 @@ class Submission extends React.Component {
         fetch(`${config.apiUrl}/api/submission/${id}`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                console.log("Submission: ", obj.body)
+                // console.log("Submission: ", obj.body)
                 this.setState({
                     submissions: obj.body
                 })
@@ -60,7 +60,7 @@ class Submission extends React.Component {
                 fetch(`${config.apiUrl}/api/assignment/get/${id}`, requestOptions)
                     .then(r => r.json().then(data => ({ status: r.status, body: data })))
                     .then(obj => {
-                        console.log("Assignments: ", obj.body)
+                        // console.log("Assignments: ", obj.body)
                         this.setState({
                             assignment: obj.body
                         })
@@ -81,7 +81,7 @@ class Submission extends React.Component {
                                             ...a2.find((item) => (item.studentId === itm.id) && item),
                                             ...itm
                                         }));
-                                    console.log(mergeById(this.state.students, this.state.submissions));
+                                    // console.log(mergeById(this.state.students, this.state.submissions));
                                     const list = mergeById(this.state.students, this.state.submissions);
                                     this.setState({ students: list })
                                 }
@@ -201,7 +201,7 @@ class Submission extends React.Component {
             method: 'GET',
         })
             .then(r => {
-                console.log("Submissions: ", r)
+                // console.log("Submissions: ", r)
             });
         this.setState({
             apiUrl: `${config.apiUrl}/api/submission/get/` + student.submissionId
@@ -215,7 +215,7 @@ class Submission extends React.Component {
         const { key } = data.options.find(o => o.text === selectValue);
 
         this.setState({ selectValue, key })
-        console.log("Key: ", key)
+        // console.log("Key: ", key)
 
     }
 
@@ -238,7 +238,7 @@ class Submission extends React.Component {
         let tableData = [];
 
         if (students != null) {
-            console.log("tableData: ", students)
+            // console.log("tableData: ", students)
             tableData = students.map(student =>
                 <tr key={student.id}>
                     <td>{student.courseTitle}</td>
@@ -293,6 +293,9 @@ class Submission extends React.Component {
                         {tableData}
                     </tbody>
                 </table>
+
+                {students == null || students.length == 0 ? <h3>Please Add Student Before Submitting Submissions.</h3> : null}
+
                 <Modal
                     open={isCRUDModalOpen}
                     onClose={() => this.handleCRUDModal("")}
@@ -303,7 +306,6 @@ class Submission extends React.Component {
                     <Modal.Content>
                         {crudModalTitle == "Add" ? <input type="file" accept="application/pdf" onChange={this.onFileHandler}></input>
                             : crudModalTitle == "Edit" ? <input type="file" accept="application/pdf" onChange={this.onFileHandler}></input>
-                                // : crudModalTitle == "Delete" ? <input type="file" accept="application/pdf" onChange={this.onFileHandler}></input>
                                     : crudModalTitle == "Share" ? <Dropdown placeholder="Moderator" clearable options={lecturerData} selection onChange={this.onSelectHandler} />
                                         : null}
                     </Modal.Content>
@@ -316,10 +318,6 @@ class Submission extends React.Component {
                                 <Button primary onClick={() => this.editSubmission()}>
                                     {crudModalTitle} <Icon name='chevron right' />
                                 </Button>
-                                // : crudModalTitle == "Delete" ?
-                                //     <Button primary onClick={() => this.deleteSubmission()}>
-                                //         {crudModalTitle} <Icon name='chevron right' />
-                                //     </Button>
                                     : crudModalTitle == "Share" ?
                                         <Button primary onClick={() => this.assignModerator()}>
                                             {crudModalTitle} <Icon name='chevron right' />

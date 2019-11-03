@@ -40,7 +40,7 @@ class Moderation extends React.Component {
         fetch(`${config.apiUrl}/api/submission`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                console.log("Submission: ", obj.body)
+                // console.log("Submission: ", obj.body)
                 this.setState({
                     submissions: obj.body.submissions,
                     length: obj.body.length

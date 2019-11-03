@@ -34,7 +34,7 @@ class Assignment extends React.Component {
         fetch(`${config.apiUrl}/api/assignment/${id}`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                console.log("Assignments: ", obj.body)
+                // console.log("Assignments: ", obj.body)
                 this.setState({
                     assignments: obj.body
                 })
@@ -69,8 +69,8 @@ class Assignment extends React.Component {
 
     onFileHandler = (e, type) => {
 
-        console.log("E: ", e.target.files)
-        console.log("type: ", type)
+        // console.log("E: ", e.target.files)
+        // console.log("type: ", type)
 
         let files = [];
 
@@ -118,15 +118,15 @@ class Assignment extends React.Component {
     }
 
     previewFile = (assignment, type) => {
-        console.log(assignment)
-        console.log(type)
+        // console.log(assignment)
+        // console.log(type)
 
         fetch(`${config.apiUrl}/api/assignment/${type}/${assignment.id}`, {
             headers: authHeader(),
             method: 'GET',
         })
             .then(r => {
-                console.log("assignment: ", r)
+                // console.log("assignment: ", r)
             });
         this.setState({
             apiUrl: `${config.apiUrl}/api/assignment/` + type + "/" + assignment.id
@@ -134,7 +134,7 @@ class Assignment extends React.Component {
     }
 
     editAssignment = () => {
-        console.log("Edit")
+        // console.log("Edit")
     }
 
     handleConfirm = (id) => {

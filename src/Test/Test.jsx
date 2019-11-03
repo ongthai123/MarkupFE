@@ -52,7 +52,7 @@ class Test extends React.Component {
     }
 
     handleBrushSize = (e) => {
-        console.log(e.target.value)
+        // console.log(e.target.value)
         this.setState({ brushSize: e.target.value })
     }
 

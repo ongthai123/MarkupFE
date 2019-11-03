@@ -35,7 +35,7 @@ class Student extends React.Component {
         fetch(`${config.apiUrl}/api/student/${id}`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                console.log("Students: ", obj.body)
+                // console.log("Students: ", obj.body)
                 this.setState({
                     students: obj.body
                 })
@@ -148,7 +148,7 @@ class Student extends React.Component {
                     }
 
                     let newArray = result.filter(value => Object.keys(value).length !== 0);
-                    console.log("result:", newArray)
+                    // console.log("result:", newArray)
 
                     let formData = new FormData();
 

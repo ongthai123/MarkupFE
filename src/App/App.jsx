@@ -40,7 +40,7 @@ class App extends React.Component {
 
     render() {
         const { currentUser, isAdmin } = this.state;
-        console.log("Current User: ", currentUser)
+        // console.log("Current User: ", currentUser)
         return (
             <HashRouter history={history}>
                 <div>

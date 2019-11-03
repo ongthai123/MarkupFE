@@ -40,13 +40,12 @@ class User extends React.Component {
         fetch(`${config.apiUrl}/api/users`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                console.log("Users: ", obj.body)
+                // console.log("Users: ", obj.body)
                 this.setState({
                     users: obj.body.users,
                     length: obj.body.length
                 })
             });
-
 
     }
 
@@ -78,8 +77,6 @@ class User extends React.Component {
                     cols: resp.cols,
                     rows: resp.rows
                 }, () => {
-                    console.log("cols: ", resp.cols)
-                    console.log("rows: ", resp.rows)
 
                     const id = this.props.match.params.id;
 
@@ -87,7 +84,6 @@ class User extends React.Component {
                     for (let i = 1; i < resp.rows.length; i++) {
                         let object = {};
                         for (let j = 0; j < resp.cols.length; j++) {
-                            console.log(resp.rows[i][j])
                             if (resp.rows[i][j] == undefined) {
                                 break;
                             }
@@ -99,7 +95,6 @@ class User extends React.Component {
                     }
 
                     let newArray = result.filter(value => Object.keys(value).length !== 0);
-                    console.log("result:", newArray)
 
                     const requestOptions = {
                         method: 'POST',
@@ -113,14 +108,12 @@ class User extends React.Component {
                     };
                     fetch(`${config.apiUrl}/api/users/create`, requestOptions)
                         .then(() => this.handleCRUDModal(""))
+                        .then(() => this.loadData())
                 });
             }
         });
     }
 
-    addUser = () => {
-        console.log("Add")
-    }
 
     handleField = (field, e) => {
         // console.log(field)

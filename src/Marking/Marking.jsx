@@ -37,7 +37,7 @@ class Marking extends React.Component {
         fetch(`${config.apiUrl}/api/marking/getall/${id}`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                console.log("Markings: ", obj.body)
+                // console.log("Markings: ", obj.body)
                 this.setState({
                     submissions: obj.body
                 })
@@ -110,7 +110,7 @@ class Marking extends React.Component {
             method: 'GET',
         })
             .then(r => {
-                console.log("Submissions: ", r)
+                // console.log("Submissions: ", r)
             });
         this.setState({
             apiUrl: `${config.apiUrl}/api/marking/` + submission.id

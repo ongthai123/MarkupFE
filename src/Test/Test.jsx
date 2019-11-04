@@ -128,6 +128,8 @@ class Test extends React.Component {
         formData.append('marks', marks)
         formData.append('fileStringBase64', pdf.savePdf())
 
+        // console.log(pdf.savePdf())
+
         const requestOptions = { 
             method: 'POST', 
             headers: authHeader(),
@@ -216,22 +218,6 @@ class Test extends React.Component {
                 </div>
                 <div id="pdf-container"></div>
 
-                {/* <div className="modal fade" id="dataModal" tabIndex="-1" role="dialog" aria-labelledby="dataModalLabel" aria-hidden="true">
-                    <div className="modal-dialog modal-lg" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="dataModalLabel">PDF annotation data</h5>
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div className="modal-body">
-                                <pre className="prettyprint lang-json linenums">
-                                </pre>
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
                 <Modal
                     open={openModal}
                     onClose={this.handleModal}
@@ -243,7 +229,7 @@ class Test extends React.Component {
                         Marks: <Input focus placeholder='Marks...' onChange={this.handleMark} />
                     </Modal.Content>
                     <Modal.Actions>
-                        <Button primary onClick={this.saveDrawing} disabled={marks == -1 ? true : false}>
+                        <Button primary onClick={this.saveDrawing} disabled={(marks != -1 && marks != null && marks >= 0 && marks <= 100) ? false : true}>
                             Save changes <Icon name='chevron right' />
                         </Button>
                     </Modal.Actions>

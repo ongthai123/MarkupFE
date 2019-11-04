@@ -43,7 +43,7 @@ module.exports = {
     externals: {
         // global app config object
         config: JSON.stringify({
-            apiUrl: 'http://444b5c02.ngrok.io'
+            apiUrl: 'http://localhost:4000'
         })
     }
 }

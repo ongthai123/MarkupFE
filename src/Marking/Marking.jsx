@@ -14,7 +14,7 @@ class Marking extends React.Component {
         this.state = {
             currentUser: authenticationService.currentUserValue,
             userFromApi: null,
-            submissions: null,
+            markings: null,
             students: null,
             assignments: null,
             files: [],
@@ -39,7 +39,7 @@ class Marking extends React.Component {
             .then(obj => {
                 // console.log("Markings: ", obj.body)
                 this.setState({
-                    submissions: obj.body
+                    markings: obj.body
                 })
             });
 
@@ -104,16 +104,16 @@ class Marking extends React.Component {
 
     }
 
-    previewFile = (submission) => {
-        fetch(`${config.apiUrl}/api/marking/${submission.id}`, {
+    previewFile = (markings) => {
+        fetch(`${config.apiUrl}/api/marking/${markings.id}`, {
             headers: authHeader(),
             method: 'GET',
         })
             .then(r => {
-                // console.log("Submissions: ", r)
+                // console.log("markings: ", r)
             });
         this.setState({
-            apiUrl: `${config.apiUrl}/api/marking/` + submission.id
+            apiUrl: `${config.apiUrl}/api/marking/` + markings.id
         })
     }
 
@@ -141,21 +141,21 @@ class Marking extends React.Component {
     }
 
     render() {
-        const { currentUser, userFromApi, submissions, assignments, students, files, openUploadModal, openConfirm } = this.state;
+        const { currentUser, userFromApi, markings, assignments, students, files, openUploadModal, openConfirm } = this.state;
 
         let tableData = null;
-        if (submissions != null) {
-            tableData = submissions.map(submission =>
-                <tr key={submission.id}>
-                    <td data-label="Student">{submission.student.firstName + " " + submission.student.lastName}</td>
-                    <td data-label="Updated By">{submission.updatedBy.firstName + " " + submission.updatedBy.lastName}</td>
-                    <td data-label="Updated On">{moment.utc(submission.updatedOn).local().format('lll')}</td>
-                    <td data-label="Grade">{submission.grade ? submission.grade : 'Unmarked'}</td>
+        if (markings != null) {
+            tableData = markings.map(markings =>
+                <tr key={markings.id}>
+                    <td data-label="Student">{markings.student.firstName + " " + markings.student.lastName}</td>
+                    <td data-label="Updated By">{markings.updatedBy.firstName + " " + markings.updatedBy.lastName}</td>
+                    <td data-label="Updated On">{moment.utc(markings.updatedOn).local().format('lll')}</td>
+                    <td data-label="Grade">{markings.grade != null ? markings.grade : 'Unmarked'}</td>
                     <td>
-                        <button className="ui black button" onClick={() => this.sendEmail(submission)}><i className="mail icon" style={{ margin: 0 }}></i></button>
-                        <a href={this.state.apiUrl} onClick={() => { this.previewFile(submission) }} target="_blank"><button className="ui primary button"><i className="eye icon" style={{ margin: 0 }}></i></button></a>
-                        <Link to={"/test/" + submission.id} ><button className="ui yellow button"><i className="edit icon" style={{ margin: 0 }}></i></button></Link>
-                        <button className="ui red button" onClick={() => { this.handleConfirm(submission.id) }}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>
+                        {currentUser.id == markings.submission.moderatorId ? null : <button className="ui black button" onClick={() => this.sendEmail(markings)}><i className="mail icon" style={{ margin: 0 }}></i></button>}
+                        <a href={this.state.apiUrl} onClick={() => { this.previewFile(markings) }} target="_blank"><button className="ui primary button"><i className="eye icon" style={{ margin: 0 }}></i></button></a>
+                        <Link to={"/test/" + markings.id} ><button className="ui yellow button"><i className="edit icon" style={{ margin: 0 }}></i></button></Link>
+                        {currentUser.id == markings.submission.moderatorId ? null : <button className="ui red button" onClick={() => { this.handleConfirm(markings.id) }}><i className="trash alternate icon" style={{ margin: 0 }}></i></button>}
                     </td>
                 </tr>
             )

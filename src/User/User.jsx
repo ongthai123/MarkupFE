@@ -133,7 +133,7 @@ class User extends React.Component {
     }
 
     editUser = () => {
-        const {selectValue, firstName, lastName, email, userData} = this.state;
+        const { selectValue, firstName, lastName, email, userData } = this.state;
 
         let formData = new FormData();
         formData.append('firstName', firstName)
@@ -149,8 +149,8 @@ class User extends React.Component {
         };
 
         fetch(`${config.apiUrl}/api/users/edit`, requestOptions)
-        .then(() => this.handleCRUDModal(""))
-        .then(() => this.loadData())
+            .then(() => this.handleCRUDModal(""))
+            .then(() => this.loadData())
 
         this.setState({
             firstName: "undefined",
@@ -240,12 +240,18 @@ class User extends React.Component {
                 <Pagination defaultActivePage={1} totalPages={(length / pageSize)} onPageChange={this.onPageChange} />
 
                 {/* CRUD Modal Start */}
-                <Modal open={isCRUDModalOpen} onClose={() => this.handleCRUDModal("")} size="small" style={{ height: "30%", verticalAlign: "center", margin: "auto" }}>
+                <Modal open={isCRUDModalOpen} onClose={() => this.handleCRUDModal("")} size="small" style={{ maxHeight: "600px", verticalAlign: "center", margin: "auto" }}>
                     <Modal.Header>{crudModalTitle}</Modal.Header>
                     <Modal.Content>
                         {crudModalTitle == "Add" ?
                             <Form>
-                                <input type="file" onChange={(e) => this.onSelectColor(e)}></input>
+                                <div>
+                                    <input type="file" onChange={(e) => this.onSelectColor(e)}></input>
+                                    Please follow this example:
+                                </div>
+                                <div>
+                                    <img src="https://i.imgur.com/QWUvhED.png" height="400" width="700" />
+                                </div>
                             </Form>
                             :
                             <Form>
@@ -268,18 +274,19 @@ class User extends React.Component {
                     </Modal.Content>
                     <Modal.Actions>
                         {crudModalTitle == "Add" ?
-                            <Button primary onClick={() => this.addUser()}>
-                                {crudModalTitle} <Icon name='chevron right' />
-                            </Button>
+                            // <Button primary onClick={() => this.addUser()}>
+                            //     {crudModalTitle} <Icon name='chevron right' />
+                            // </Button>
+                            null
                             : crudModalTitle == "Edit" ?
                                 <Button primary onClick={() => this.editUser()}>
                                     {crudModalTitle} <Icon name='chevron right' />
                                 </Button>
                                 :
                                 null
-                                // <Button primary onClick={() => this.deleteUser()}>
-                                //     {crudModalTitle} <Icon name='chevron right' />
-                                // </Button>
+                            // <Button primary onClick={() => this.deleteUser()}>
+                            //     {crudModalTitle} <Icon name='chevron right' />
+                            // </Button>
                         }
                     </Modal.Actions>
                 </Modal>

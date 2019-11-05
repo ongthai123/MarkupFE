@@ -65,6 +65,7 @@ class Moderation extends React.Component {
                         <td>{submission.course.title}</td>
                         <td data-label="Lecturer">{submission.lecturer.firstName + " " + submission.lecturer.lastName}</td>
                         <td data-label="Student">{submission.student.firstName + " " + submission.student.lastName}</td>
+                        <td data-label="Moderator">{submission.moderator.firstName + " " + submission.moderator.lastName}</td>
                         <td data-label="Updated By">{submission.updatedBy.firstName + " " + submission.updatedBy.lastName}</td>
                         <td data-label="Updated On">{moment.utc(submission.updatedOn).local().format('lll')}</td>
                         <td>
@@ -87,7 +88,7 @@ class Moderation extends React.Component {
                             <td data-label="Lecturer">{submission.lecturer.firstName + " " + submission.lecturer.lastName}</td>
                             <td data-label="Student">{submission.student.firstName + " " + submission.student.lastName}</td>
                             <td data-label="Updated By">{submission.updatedBy.firstName + " " + submission.updatedBy.lastName}</td>
-                            <td data-label="Updated On">{submission.updatedOn}</td>
+                            <td data-label="Updated On">{moment.utc(submission.updatedOn).local().format('lll')}</td>
                             <td>
                                 <Link to={"/markings/" + submission.submissionId}><button className="ui teal button"><i className="paint brush icon" style={{ margin: 0 }}></i></button></Link>
                             </td>
@@ -108,6 +109,7 @@ class Moderation extends React.Component {
                             <th>Course</th>
                             <th>Lecturer</th>
                             <th>Student</th>
+                            {currentUser.role == Role.Admin ? <th>Moderator</th> : null}
                             <th>Updated By</th>
                             <th>Updated On</th>
                             <th>Action</th>

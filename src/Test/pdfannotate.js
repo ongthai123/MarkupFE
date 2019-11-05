@@ -170,7 +170,6 @@ PDFAnnotate.prototype.savePdf = function () {
 	});
 	// doc.save('sample.pdf');
 	return btoa(doc.output());
-	// return doc.output('save', 'filename.pdf');
 }
 
 PDFAnnotate.prototype.download = function () {

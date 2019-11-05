@@ -228,12 +228,18 @@ class Student extends React.Component {
                 </table>
 
                 {/* CRUD Modal Start */}
-                <Modal open={isCRUDModalOpen} onClose={() => this.handleCRUDModal("")} size="small" style={{ maxHeight: "300px", verticalAlign: "center", margin: "auto" }}>
+                <Modal open={isCRUDModalOpen} onClose={() => this.handleCRUDModal("")} size="small" style={{ maxHeight: "600px", verticalAlign: "center", margin: "auto" }}>
                     <Modal.Header>{crudModalTitle}</Modal.Header>
                     <Modal.Content>
                         {crudModalTitle == "Add" ?
                             <Form>
-                                <input type="file" onChange={(e) => this.onSelectColor(e)}></input>
+                                <div>
+                                    <input type="file" onChange={(e) => this.onSelectColor(e)}></input>
+                                    Please follow this example:
+                                </div>
+                                <div>
+                                    <img src="https://i.imgur.com/5gC3AyJ.png" height="400" width="500" />
+                                </div>
                             </Form>
                             :
                             <Form>
@@ -254,9 +260,10 @@ class Student extends React.Component {
                     </Modal.Content>
                     <Modal.Actions>
                         {crudModalTitle == "Add" ?
-                            <Button primary onClick={() => this.addStudent()}>
-                                {crudModalTitle} <Icon name='chevron right' />
-                            </Button>
+                            // <Button primary onClick={() => this.addStudent()}>
+                            //     {crudModalTitle} <Icon name='chevron right' />
+                            // </Button>
+                            null
                             : crudModalTitle == "Edit" ?
                                 <Button primary onClick={() => this.editStudent()}>
                                     {crudModalTitle} <Icon name='chevron right' />

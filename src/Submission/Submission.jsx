@@ -37,7 +37,7 @@ class Submission extends React.Component {
         const id = this.props.match.params.id;
         const requestOptions = { method: 'GET', headers: authHeader() };
 
-        console.log(id)
+        // console.log(id)
 
         fetch(`${config.apiUrl}/api/users/getallusers`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))

@@ -226,15 +226,6 @@ class Assignment extends React.Component {
                                     placeholder='Title'
                                     onChange={this.onInputHandler}
                                 />
-                                {/* <Form.Field
-                                    control={Select}
-                                    options={modifiedCriterias}
-                                    label={{ children: 'Marking Criteria', htmlFor: 'form-select-control-gender' }}
-                                    placeholder='Marking Criteria'
-                                    search
-                                    searchInput={{ id: 'form-select-control-gender' }}
-                                    onChange={this.onSelectHandler}
-                                /> */}
                                 <input title="Assignment" type="file" accept="application/pdf" onChange={(e) => this.onFileHandler(e, "assignment")}></input>
                                 <input title="Marking Criteria" type="file" accept="application/pdf" onChange={(e) => this.onFileHandler(e, "criteria")}></input>
                             </Form.Group>
@@ -251,9 +242,6 @@ class Assignment extends React.Component {
                                 </Button>
                                 :
                                 null
-                            // <Button primary onClick={() => this.deleteAssignment()}>
-                            //     {crudModalTitle} <Icon name='chevron right' />
-                            // </Button>
                         }
                     </Modal.Actions>
                 </Modal>

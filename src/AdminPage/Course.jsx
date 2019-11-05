@@ -273,9 +273,6 @@ class Course extends React.Component {
                                 </Button>
                                 :
                                 null
-                                // <Button primary onClick={() => this.deleteCourse()}>
-                                //     {crudModalTitle} <Icon name='chevron right' />
-                                // </Button>
                         }
                     </Modal.Actions>
                 </Modal>

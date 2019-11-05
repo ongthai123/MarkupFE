@@ -277,7 +277,7 @@ class Submission extends React.Component {
                     <div className="six wide column">
                     </div>
                 </div>
-                <table className="ui selectable inverted single line table" style={{ textAlign: "center" }}>
+                <table className="ui selectable inverted table" style={{ textAlign: "center" }}>
                     <thead>
                         <tr><th>Course</th>
                             <th>StudentId</th>

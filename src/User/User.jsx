@@ -24,8 +24,6 @@ class User extends React.Component {
     }
 
     componentDidMount() {
-        // userService.getAll().then(users => this.setState({ users }, () => console.log("Users: ", this.state.users)));
-
         this.loadData();
     }
 
@@ -274,9 +272,6 @@ class User extends React.Component {
                     </Modal.Content>
                     <Modal.Actions>
                         {crudModalTitle == "Add" ?
-                            // <Button primary onClick={() => this.addUser()}>
-                            //     {crudModalTitle} <Icon name='chevron right' />
-                            // </Button>
                             null
                             : crudModalTitle == "Edit" ?
                                 <Button primary onClick={() => this.editUser()}>
@@ -284,9 +279,7 @@ class User extends React.Component {
                                 </Button>
                                 :
                                 null
-                            // <Button primary onClick={() => this.deleteUser()}>
-                            //     {crudModalTitle} <Icon name='chevron right' />
-                            // </Button>
+
                         }
                     </Modal.Actions>
                 </Modal>

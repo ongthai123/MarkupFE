@@ -204,11 +204,6 @@ class Student extends React.Component {
                 <div className="ui grid">
                     <div className="ten wide column"><h1>Student</h1></div>
                     <div className="six wide column">
-                        {/* {currentUser.role == Role.Admin ?
-                            <button className="ui inverted green button" style={{ float: "right" }} onClick={() => this.handleCRUDModal("Add")}>Add New</button>
-                            :
-                            null
-                        } */}
                         <button className="ui inverted green button" style={{ float: "right" }} onClick={() => this.handleCRUDModal("Add")}>Add New</button>
                     </div>
                 </div>
@@ -260,9 +255,6 @@ class Student extends React.Component {
                     </Modal.Content>
                     <Modal.Actions>
                         {crudModalTitle == "Add" ?
-                            // <Button primary onClick={() => this.addStudent()}>
-                            //     {crudModalTitle} <Icon name='chevron right' />
-                            // </Button>
                             null
                             : crudModalTitle == "Edit" ?
                                 <Button primary onClick={() => this.editStudent()}>

@@ -303,7 +303,7 @@ class Submission extends React.Component {
                     open={isCRUDModalOpen}
                     onClose={() => this.handleCRUDModal("")}
                     size='small'
-                    style={{ maxHeight: "500px", verticalAlign: "center", margin: "auto" }}
+                    style={{ maxHeight: "400px", verticalAlign: "center", margin: "auto" }}
                 >
                     <Modal.Header>{crudModalTitle}</Modal.Header>
                     <Modal.Content>

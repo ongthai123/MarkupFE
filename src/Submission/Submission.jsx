@@ -121,12 +121,9 @@ class Submission extends React.Component {
         formData.append('AssignmentId', assignment.id)
         formData.append('StudentId', studentId)
 
-        let header = authHeader();
-        header.append('Origin','http://markup-env.b4ypszqaxb.ap-southeast-2.elasticbeanstalk.com');
-
         fetch(`${config.apiUrl}/api/submission/create`, {
             mode: 'cors',
-            headers: header,
+            headers: authHeader(),
             method: 'POST',
             body: formData,
         })

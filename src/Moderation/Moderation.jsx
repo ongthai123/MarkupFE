@@ -29,9 +29,10 @@ class Moderation extends React.Component {
     }
 
     loadData = () => {
-        const { activePage, pageSize } = this.state;
+        const { activePage, pageSize, currentUser } = this.state;
 
         let formData = new FormData();
+        formData.append('userId', currentUser.id)
         formData.append('activePage', activePage)
         formData.append('pageSize', pageSize)
 
@@ -40,7 +41,7 @@ class Moderation extends React.Component {
         fetch(`${config.apiUrl}/api/submission`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                // console.log("Submission: ", obj.body)
+                console.log("Submission: ", obj.body)
                 this.setState({
                     submissions: obj.body.submissions,
                     length: obj.body.length
@@ -63,9 +64,9 @@ class Moderation extends React.Component {
                 tableData = submissions.map(submission =>
                     <tr key={submission.submissionId}>
                         <td>{submission.course.title}</td>
-                        <td data-label="Lecturer">{submission.lecturer.firstName + " " + submission.lecturer.lastName}</td>
+                        {/* <td data-label="Lecturer">{submission.lecturer.firstName + " " + submission.lecturer.lastName}</td> */}
                         <td data-label="Student">{submission.student.firstName + " " + submission.student.lastName}</td>
-                        <td data-label="Moderator">{submission.moderator.firstName + " " + submission.moderator.lastName}</td>
+                        <td data-label="Moderator">{submission.moderator == null ? null : submission.moderator.firstName + " " + submission.moderator.lastName}</td>
                         <td data-label="Updated By">{submission.updatedBy.firstName + " " + submission.updatedBy.lastName}</td>
                         <td data-label="Updated On">{moment.utc(submission.updatedOn).local().format('lll')}</td>
                         <td>
@@ -85,7 +86,7 @@ class Moderation extends React.Component {
                     tableData = filteredList.map(submission =>
                         <tr key={submission.submissionId}>
                             <td>{submission.course.title}</td>
-                            <td data-label="Lecturer">{submission.lecturer.firstName + " " + submission.lecturer.lastName}</td>
+                            {/* <td data-label="Lecturer">{submission.lecturer.firstName + " " + submission.lecturer.lastName}</td> */}
                             <td data-label="Student">{submission.student.firstName + " " + submission.student.lastName}</td>
                             <td data-label="Updated By">{submission.updatedBy.firstName + " " + submission.updatedBy.lastName}</td>
                             <td data-label="Updated On">{moment.utc(submission.updatedOn).local().format('lll')}</td>
@@ -107,7 +108,7 @@ class Moderation extends React.Component {
                     <thead>
                         <tr>
                             <th>Course</th>
-                            <th>Lecturer</th>
+                            {/* <th>Lecturer</th> */}
                             <th>Student</th>
                             {currentUser.role == Role.Admin ? <th>Moderator</th> : null}
                             <th>Updated By</th>

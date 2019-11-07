@@ -107,6 +107,7 @@ class Assignment extends React.Component {
         }
 
         const requestOptions = {
+            mode: 'cors',
             headers: authHeader(),
             method: 'POST',
             body: formData
@@ -152,6 +153,7 @@ class Assignment extends React.Component {
         formData.append('id', this.state.deleteId)
 
         fetch(`${config.apiUrl}/api/assignment/delete`, {
+            mode: 'cors',
             headers: authHeader(),
             method: 'POST',
             body: formData,

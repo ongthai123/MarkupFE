@@ -131,6 +131,7 @@ class Test extends React.Component {
         // console.log(pdf.savePdf())
 
         const requestOptions = { 
+            mode: 'cors',
             method: 'POST', 
             headers: authHeader(),
             body: formData

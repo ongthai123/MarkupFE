@@ -60,6 +60,7 @@ class Marking extends React.Component {
         formData.append('id', this.state.deleteId)
 
         const requestOptions = {
+            mode: 'cors',
             method: 'POST',
             headers: authHeader(),
             body: formData
@@ -95,6 +96,7 @@ class Marking extends React.Component {
         formData.append('submissionId', id)
 
         const requestOptions = {
+            mode: 'cors',
             method: 'POST',
             headers: authHeader(),
             body: formData
@@ -127,6 +129,7 @@ class Marking extends React.Component {
         formData['student'] = marking.student
 
         const requestOptions = {
+            mode: 'cors',
             method: 'POST',
             headers: {
                 ...authHeader(), ...{

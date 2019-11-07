@@ -40,7 +40,7 @@ class Course extends React.Component {
         formData.append('activePage', activePage)
         formData.append('pageSize', pageSize)
 
-        const requestOptions = { method: 'POST', headers: authHeader(), body: formData };
+        const requestOptions = {mode: 'cors', method: 'POST', headers: authHeader(), body: formData };
         fetch(`${config.apiUrl}/api/course`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
@@ -97,6 +97,7 @@ class Course extends React.Component {
         formData.append('title', inputValue)
 
         const requestOptions = {
+            mode: 'cors',
             method: 'POST',
             headers: authHeader(),
             body: formData
@@ -116,6 +117,7 @@ class Course extends React.Component {
         formData.append('title', inputValue)
 
         const requestOptions = {
+            mode: 'cors',
             method: 'POST',
             headers: authHeader(),
             body: formData
@@ -146,6 +148,7 @@ class Course extends React.Component {
         formData.append('id', this.state.deleteId)
 
         fetch(`${config.apiUrl}/api/course/delete`, {
+            mode: 'cors',
             headers: authHeader(),
             method: 'POST',
             body: formData,

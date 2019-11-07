@@ -70,6 +70,7 @@ class Student extends React.Component {
         formData.append('studentId', studentData.id)
 
         const requestOptions = {
+            mode: 'cors',
             method: 'POST',
             headers: authHeader(),
             body: formData
@@ -101,6 +102,7 @@ class Student extends React.Component {
         formData.append('id', this.state.deleteId)
 
         fetch(`${config.apiUrl}/api/student/delete`, {
+            mode: 'cors',
             headers: authHeader(),
             method: 'POST',
             body: formData,
@@ -161,6 +163,7 @@ class Student extends React.Component {
                     formData.append('courseId', id)
 
                     const requestOptions = {
+                        mode: 'cors',
                         method: 'POST',
                         headers: authHeader(),
                         body: formData

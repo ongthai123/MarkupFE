@@ -52,7 +52,7 @@ class HomePage extends React.Component {
             formData.append('password', password);
             formData.append('confirmPassword', confirmPassword)
 
-            const requestOptions = { method: 'POST', headers: authHeader(), body: formData };
+            const requestOptions = {mode: 'cors', method: 'POST', headers: authHeader(), body: formData };
             fetch(`${config.apiUrl}/api/users/changepassword`, requestOptions)
                 .then(() => alert("Changes has been made!"))
         }

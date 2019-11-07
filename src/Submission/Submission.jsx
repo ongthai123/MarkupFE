@@ -146,6 +146,7 @@ class Submission extends React.Component {
         formData.append('SubmissionId', data)
 
         fetch(`${config.apiUrl}/api/submission/edit`, {
+            mode: 'cors',
             headers: authHeader(),
             method: 'POST',
             body: formData,
@@ -176,6 +177,7 @@ class Submission extends React.Component {
         formData.append('id', this.state.deleteId)
 
         fetch(`${config.apiUrl}/api/submission/delete`, {
+            mode: 'cors',
             headers: authHeader(),
             method: 'POST',
             body: formData,

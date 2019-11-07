@@ -35,7 +35,7 @@ class Moderation extends React.Component {
         formData.append('activePage', activePage)
         formData.append('pageSize', pageSize)
 
-        const requestOptions = { method: 'POST', headers: authHeader(), body: formData };
+        const requestOptions = {mode: 'cors', method: 'POST', headers: authHeader(), body: formData };
 
         fetch(`${config.apiUrl}/api/submission`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))

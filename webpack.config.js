@@ -43,7 +43,7 @@ module.exports = {
     externals: {
         // global app config object
         config: JSON.stringify({
-            apiUrl: 'http://markup-env.b4ypszqaxb.ap-southeast-2.elasticbeanstalk.com'
+            apiUrl: 'http://localhost:4000'
         })
     }
 }

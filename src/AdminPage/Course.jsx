@@ -40,7 +40,7 @@ class Course extends React.Component {
         formData.append('activePage', activePage)
         formData.append('pageSize', pageSize)
 
-        const requestOptions = {mode: 'cors', method: 'POST', headers: authHeader(), body: formData };
+        const requestOptions = { mode: 'cors', method: 'POST', headers: authHeader(), body: formData };
         fetch(`${config.apiUrl}/api/course`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
@@ -51,7 +51,7 @@ class Course extends React.Component {
                 })
             });
 
-        const requestOptions2 = {method: 'GET', headers: authHeader()}
+        const requestOptions2 = { method: 'GET', headers: authHeader() }
         fetch(`${config.apiUrl}/api/users/getallusers`, requestOptions2)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
@@ -106,6 +106,11 @@ class Course extends React.Component {
         fetch(`${config.apiUrl}/api/course/create`, requestOptions)
             .then(() => this.handleCRUDModal(""))
             .then(() => this.loadData())
+
+        this.setState({
+            key: null,
+            inputValue: "undefined"
+        })
     }
 
     editCourse = () => {
@@ -128,7 +133,7 @@ class Course extends React.Component {
             .then(() => this.loadData())
 
         this.setState({
-            key: 0,
+            key: null,
             inputValue: "undefined"
         })
     }
@@ -255,7 +260,7 @@ class Course extends React.Component {
                                 <Form.Field
                                     control={Select}
                                     options={modifiedLecturers}
-                                    label={{ children: 'Lecturer'}}
+                                    label={{ children: 'Lecturer' }}
                                     placeholder='Lecturer'
                                     onChange={this.onSelectHandler}
 

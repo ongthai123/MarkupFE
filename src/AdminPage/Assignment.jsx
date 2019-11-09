@@ -116,6 +116,12 @@ class Assignment extends React.Component {
         fetch(`${config.apiUrl}/api/assignment/create`, requestOptions)
             .then(() => this.handleCRUDModal(""))
             .then(() => this.loadData())
+
+        this.setState({
+            inputValue: "undefined",
+            assignmentFiles: null,
+            criteriaFiles: null
+        })
     }
 
     previewFile = (assignment, type) => {

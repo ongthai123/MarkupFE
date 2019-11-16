@@ -150,8 +150,8 @@ class Marking extends React.Component {
         if (markings != null) {
             tableData = markings.map(markings =>
                 <tr key={markings.id}>
-                    <td data-label="Student">{markings.student.firstName + " " + markings.student.lastName}</td>
-                    <td data-label="Updated By">{markings.updatedBy.firstName + " " + markings.updatedBy.lastName}</td>
+                    <td data-label="Student">{markings.student ? null : markings.student.firstName + " " + markings.student.lastName}</td>
+                    <td data-label="Updated By">{markings.updated ? null : markings.updatedBy.firstName + " " + markings.updatedBy.lastName}</td>
                     <td data-label="Updated On">{moment.utc(markings.updatedOn).local().format('lll')}</td>
                     <td data-label="Grade">{markings.grade != null ? markings.grade : 'Unmarked'}</td>
                     <td>

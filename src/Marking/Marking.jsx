@@ -37,7 +37,7 @@ class Marking extends React.Component {
         fetch(`${config.apiUrl}/api/marking/getall/${id}`, requestOptions)
             .then(r => r.json().then(data => ({ status: r.status, body: data })))
             .then(obj => {
-                // console.log("Markings: ", obj.body)
+                console.log("Markings: ", obj.body)
                 this.setState({
                     markings: obj.body
                 })
@@ -150,8 +150,8 @@ class Marking extends React.Component {
         if (markings != null) {
             tableData = markings.map(markings =>
                 <tr key={markings.id}>
-                    <td data-label="Student">{markings.student ? null : markings.student.firstName + " " + markings.student.lastName}</td>
-                    <td data-label="Updated By">{markings.updated ? null : markings.updatedBy.firstName + " " + markings.updatedBy.lastName}</td>
+                    <td data-label="Student">{markings.student == null ? null : markings.student.firstName + " " + markings.student.lastName}</td>
+                    <td data-label="Updated By">{markings.updatedBy == null ? null : markings.updatedBy.firstName + " " + markings.updatedBy.lastName}</td>
                     <td data-label="Updated On">{moment.utc(markings.updatedOn).local().format('lll')}</td>
                     <td data-label="Grade">{markings.grade != null ? markings.grade : 'Unmarked'}</td>
                     <td>
